@@ -1,0 +1,8 @@
+{
+  "name": "continuum",
+  "label": "Continuum",
+  "description": "Read-only cross-profile project recovery and attention dashboard for Hermes.",
+  "version": "0.1.0",
+  "tab": { "hidden": true },
+  "api": "plugin_api.py"
+}

@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Continuum — board</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="wrap">
+    <header class="c-header">
+      <div class="c-brand">
+        <div class="c-logo" aria-hidden="true">C</div>
+        <div>
+          <h1>Continuum</h1>
+          <div class="c-tag">read-only cross-profile project recovery &middot; local</div>
+        </div>
+      </div>
+      <div class="c-header-actions">
+        <input id="filter" class="c-filter" type="search" placeholder="filter (names, ids)" aria-label="filter projects">
+        <button id="scan" class="c-btn primary" type="button">Scan now</button>
+      </div>
+    </header>
+
+    <div class="c-banner" role="note">
+      <span class="c-badge-label">Read-only source scan</span>
+      <span>Reviews change only the audited Continuum registry; source sessions are never modified. Scan now is explicit.</span>
+    </div>
+
+    <main id="app" aria-live="polite">
+      <div class="c-skeleton" role="status" aria-label="Loading board"></div>
+      <div class="c-skeleton"></div>
+      <div class="c-skeleton"></div>
+    </main>
+
+    <div id="toast-root" aria-live="polite"></div>
+    <div id="live" class="c-visually-hidden" aria-live="polite"></div>
+  </div>
+  <script type="module" src="/app.js"></script>
+</body>
+</html>

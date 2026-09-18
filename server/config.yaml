@@ -1,0 +1,244 @@
+# Continuum C1 — configuration surface.
+# Values marked (DRAFT) follow the architecture contract's provisional numbers (OD5);
+# band SEMANTICS are locked to research CR-1. Nothing here is a secret.
+
+profiles_dir: ""            # default: <hermes_home>/profiles
+db_filename: "state.db"
+db_default_profile: "~/.hermes/state.db"   # OD8: parameterized, not scanned by default
+include_default_db: false
+
+registry_path: "data/registry.db"          # relative to the plugin dir
+safety_lag_seconds: 5
+
+# AV-4 / CR-2: generic paths are context, NEVER cluster keys.
+generic_paths:
+  - "/Users/kethuda"
+  - "/Users/kethuda/"
+  - "."
+  - "./"
+  - "/"
+  - "/tmp"
+  - "/private/tmp"
+  - "/Users"
+  - "/home"
+  - "~"
+
+# Deterministic workspace_root derivation (OD4 / D3). First match wins.
+workspace_patterns:
+  - '^(?P<repo>.*?/(?:wrk|working|work)/[^/]+)'
+  - '^(?P<repo>.*?/Hermes/[^/]+)$'
+
+# Bounded walk-up to the nearest .git; disabled in fixture tests.
+workspace_git_walkup: true
+workspace_walkup_max_depth: 8
+
+# CR-2: generic tokens are dropped from canonical key generation.
+stopword_tokens:
+  - build
+  - site
+  - website
+  - audit
+  - fix
+  - fixes
+  - update
+  - test
+  - tests
+  - testing
+  - project
+  - session
+  - error
+  - errors
+  - issue
+  - issues
+  - feature
+  - work
+  - task
+  - tasks
+  - plan
+  - check
+  - review
+  - the
+  - and
+  - for
+  - with
+  - that
+  - this
+  - from
+  - into
+  - files
+  - file
+  - code
+  - new
+  - add
+  - make
+  - help
+  - need
+  - please
+  - continue
+  - resume
+  - handoff
+  - status
+  - summary
+  - report
+  - dashboard
+  - plugin
+  - agent
+  - hermes
+
+# S0 noise (NS-4 / NS-7 content classes)
+test_title_patterns:
+  - '(?i)^\s*(ping|pong|test|testing|smoke ?test|hello|hi)\b'
+  - '(?i)\b(confirm receipt|handshake|delegate_task probe|probe)\b'
+  - '(?i)\b(health ?check|heartbeat)\b'
+eval_title_patterns:
+  - '(?i)\b(model eval|benchmark|eval(uation)? run|provider test|model test)\b'
+recurring_title_pattern:
+  '·\s*\w{3}\s+\d{1,2}\s+\d{1,2}:\d{2}\s*$'
+
+# Bounded probe window (never the whole transcript)
+probe_head: 1
+probe_tail: 6
+excerpt_chars: 240
+
+# --------------------------------------------------------------------------- audience (D-US)
+# Approved dispatch-brief roots (architecture fact 8). Read-only index; C1 digest-matches a
+# session's first user message against every file under these roots. `{hermes_home}` is
+# substituted at load time, so a fixture hermes_home never reads the live corpus.
+audience_brief_roots:
+  - "{hermes_home}/profiles/lugia/cache/delegation"
+  - "{hermes_home}/profiles/lugia/cache/session-project-indexer/briefs"
+  - "{hermes_home}/profiles/halakukhan/cache/delegation"
+  - "{hermes_home}/profiles/sheikh-al-jabr/cache/delegation"
+audience_brief_exts: [".md", ".txt"]
+audience_brief_max_bytes: 2000000
+# C2 envelope keys (>= 2 distinct keys => DELEGATED) and C5 role-declaration targets.
+dispatch_keys:
+  - goal
+  - goals
+  - team6_agent
+  - from
+  - owner
+  - domain
+  - task_id
+  - role
+  - ownership_matrix
+  - matrix_read_at_dispatch
+  - upstream_approval
+dispatch_target_profiles:
+  - azaraki
+  - kodekoot
+  - halakukhan
+  - shayba
+  - sheikh-al-jabr
+  - lugia
+# Untruncated first-user-message cap (must hold a full brief: the EvoPet brief is 5 389 chars).
+audience_probe_chars: 8192
+anchor_min_token_len: 5
+
+# ET-1 rule patterns
+next_action_patterns:
+  - '(?i)\bnext (?:step|action|up)s?\b[: ]'
+  - '(?i)\b(?:to[- ]?do|todo)\b[: ]'
+  - '(?i)\bcontinue (?:by|with)\b'
+  - '(?i)\bremain(?:s|ing)? to\b'
+blocker_patterns:
+  - '(?i)\bblocked\b'
+  - '(?i)\bcannot proceed\b'
+  - '(?i)\bwaiting (?:on|for)\b'
+  - '(?i)\bneed(?:s)? (?:access|approval|input)\b'
+  - '(?i)\bpermission denied\b'
+awaiting_user_patterns:
+  - '(?i)\bawaiting (?:your|user|approval|confirmation)\b'
+  - '(?i)\bplease (?:confirm|approve|let me know)\b'
+  - '(?i)\blet me know\b'
+  - '(?i)\bwaiting on (?:you|the user)\b'
+  - '\?\s*$'
+goal_patterns:
+  - '(?i)\b(?:goal|objective)\b[: ]'
+  - '(?i)\bbuilding\b'
+  - '(?i)\bimplement(?:ing)?\b'
+decision_patterns:
+  - '(?i)\bdecision\b[: ]'
+  - '(?i)\bdecided to\b'
+  - '(?i)\bwe(?:''| a)?ll use\b'
+health_ack_content_patterns:
+  - '(?i)^\s*(ok|okay|ack|acknowledged|received|got it|thanks|thank you|done)\s*[.!]?\s*$'
+
+# Confidence cut-points (DRAFT, OD5). Band semantics locked to CR-1.
+t_accept: 0.75
+t_review: 0.45
+t_noise: 0.20
+band_scores:
+  high: 0.85
+  medium: 0.60
+  low: 0.35
+  unknown: 0.15
+
+# Staleness (product view bands: 0-3d, 3-7d, 7-30d, 30d+)
+recent_days: 3
+stall_days: 7            # LS-5 threshold (DRAFT)
+abandoned_days: 60       # LS-8 threshold (DRAFT)
+
+# Declared-field TTL windows (DRAFT, OD5)
+ttl_next_action_days: 14
+ttl_lifecycle_days: 30
+ttl_drive_expected_days: 90
+
+# S3 bounded model step — default OFF (OD2 / INV-4)
+model_enabled: false
+model_provider: ""
+
+# Minimum shared-session count for a canonical token to form a cluster (CS-3 gate)
+token_min_sessions: 2
+# A token must be <= this fraction of all sessions to count as "rare" ...
+token_max_frequency: 0.02
+# ... and never span more than this many sessions (absolute ceiling, scales with corpus)
+token_max_sessions: 40
+# CS-3 weak prose nouns: annotate evidence, never union two sessions (CR-2 in practice)
+weak_token_clustering: false
+
+# --------------------------------------------------------------------------- M4 Continuity Playground
+# Read-time projection only: no new lane, lifecycle value, table, or column. All values are
+# non-secret data defaults. An invalid value fails explicitly at load time.
+board_default_view: "all"            # API default when ?view= is omitted (compat)
+board_default_sort_today: "attention"
+board_default_sort_all: "quiet"      # compatibility alias -> last_worked_on desc
+board_page_size_default: 100
+board_page_size_max: 200             # §8.3 transport cap; counts stay complete
+playground_group_cap: 5              # bounded start_here / rediscover references
+scan_full_sweep_seconds: 21600       # periodic full profile reconciliation (6h)
+pane_recent_cap: 7                   # bounded captured rows exposed to a session pane
+pane_user_cap: 3                     # bounded user-authored rows exposed to a session pane
+# MC-L3/MC-S4: staleness band edges in days, anchored on `last_user_worked_on` (user-facing
+# activity). Three strictly ascending positive cut-points == the locked bands
+# 0-3d / 3-7d / 7-30d / 30d+. `stall_age_days` is a separate signal and is never the anchor.
+# An invalid value fails config load loudly (never silently defaulted).
+staleness_band_edges: [3, 7, 30]
+
+# --------------------------------------------------------------------------- TASK-HOME sync
+# TH-L7/TH-L13: the switch below only controls the READ projection (shipped false per §7; flip
+# it to surface the Task Home panel). The sync itself is always an explicit CLI pass
+# (`python -m continuum.cli task-home sync`) — no daemon, no watcher, no background thread, and
+# no write on any GET path. TASK-HOME.md is READ-ONLY in both directions (TH-L1); the sync only
+# reads it and generates a proposal under review/out/ for a human.
+# Paths are relative to the plugin dir unless absolute. An invalid value fails loudly.
+task_home_enabled: true
+task_home_source_path: "/Users/kethuda/.hermes/profiles/orda/TASK-HOME.md"
+task_home_ledger_path: "data/task_home_sync.json"   # + data/task_home_sync.lock (local, gitignored)
+task_home_export_dir: "review/out"                  # generated: task-home-export.{md,json,meta.json}
+task_home_stale_after_seconds: 900                  # freshness window for the published `stale` flag
+
+# --------------------------------------------------------------------------- Orda action-log
+# AL-L10/AL-L2: the switch below controls the READ projection only (view=action_log). The log is
+# a PROJECTION of evidence sources (AL-L1) — INFLIGHT claim rows, DISPATCH-LEDGER dispatch rows
+# and delegation receipts — populated by an explicit CLI pass
+# (`python -m continuum.cli action-log sync`): no daemon, no watcher, no background thread, and no
+# write on any GET path. All action-log state rides its own JSON ledger + JSONL event sidecar
+# under data/ (no registry DDL; SCHEMA_VERSION stays 3). Sources are READ-ONLY; glob entries are
+# expanded recursively. An invalid value fails loudly at load time.
+action_log_enabled: true
+action_log_source_paths:
+  - "~/.hermes/team-skills/ops/INFLIGHT.md"
+  - "~/.hermes/team-skills/ops/DISPATCH-LEDGER.md"
+  - "~/.hermes/profiles/*/cache/delegation/**/*-receipt.md"
+action_log_stale_after_seconds: 900                 # freshness window for the published `stale` flag

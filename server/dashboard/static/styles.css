@@ -1,0 +1,1174 @@
+/*
+ * Continuum standalone browser dashboard — styles.css
+ *
+ * Visual language carried forward from the approved dark design system
+ * (CSS custom-property token block only): palette, radii, shadows and the
+ * card / chip / banner vocabulary. No project-specific data, scripts, or
+ * content from any other dashboard is included — only the token language.
+ *
+ * Layout: eight fixed kanban lanes + detail panel. Stacked reflow at the
+ * lane-width breakpoint (8*260 + 7*12 = 2164px). Reduced-motion honoured.
+ */
+
+/* ── JARVIS skin token block (Frida §2, --cj-*) ─────────────────────────────────
+   The legacy names below keep their identity (no selector or JS consumer is
+   renamed, per §11.2 "legacy -> token mapping"); each one now resolves to its
+   Frida role value so every legacy rule paints from the new palette, and the
+   skin section at the end of this file overrides surfaces individually.
+   Contrast values are the computed WCAG ratios re-verified this pass (§2.7). */
+:root {
+  /* depth planes (§2.2) */
+  --cj-void: #05070c;      /* page base — deepest navy-black */
+  --cj-deep: #080c14;      /* recessive regions (lane interiors, bars) */
+  --cj-panel: #0c1220;     /* primary surface: cards, tables, panels */
+  --cj-panel-2: #111a2b;   /* raised surface: menus, drawer, toasts */
+  --cj-inset: #060a12;     /* inset wells: panes, code, table heads */
+
+  /* rules and edges (§2.3) */
+  --cj-line: #1b2740;      /* hairline divider (decorative; 1.26 on panel) */
+  --cj-line-2: #26405f;    /* structural border of a panel (1.76, decorative) */
+  --cj-line-hot: #2f4c6e;  /* hover/active edge */
+  --cj-radius-sm: 4px;
+  --cj-radius-md: 8px;
+  --cj-radius-lg: 12px;
+  --cj-radius-full: 999px;
+
+  /* text (§2.4 — every text tier is >=6.19:1 on panel) */
+  --cj-fg: #e7eefb;        /* 16.05 */
+  --cj-fg-2: #c3d1e8;      /* 12.12 */
+  --cj-fg-dim: #9fb0c9;    /* 8.48 */
+  --cj-fg-faint: #8496ae;  /* 6.19 — the dimmest text allowed (closed, archived) */
+  --cj-fg-hush: #6b7f9c;   /* 4.58 — NON-TEXT ONLY (rule labels/watermarks) */
+
+  /* state luminescence (§2.5) — cyan 11.22 · amber 10.60 · emerald 11.26
+     rose 6.88 · violet 5.28 (panel-2) · closed has no hue */
+  --cj-cyan: #4fd8ff;
+  --cj-cyan-deep: #1f6f8b;   /* cyan at rest: structure without emission (3.30:1, non-text only) */
+  --cj-amber: #ffb454;
+  --cj-amber-soft: #ffc879;
+  --cj-emerald: #58e0a8;
+  --cj-rose: #ff6b8a;
+  --cj-violet: #8b7bff;
+  --cj-closed: #8496ae;
+
+  /* glow and texture (§2.6) */
+  --cj-halo-cyan: 0 0 0 1px rgba(79,216,255,.35), 0 0 14px -4px rgba(79,216,255,.55);
+  --cj-halo-amber: 0 0 0 1px rgba(255,180,84,.35), 0 0 14px -4px rgba(255,180,84,.50);
+  --cj-halo-rose: 0 0 0 1px rgba(255,107,138,.40), 0 0 14px -4px rgba(255,107,138,.45);
+  --cj-elev-1: 0 1px 0 rgba(255,255,255,.02), 0 8px 24px -12px rgba(0,0,0,.75);
+  --cj-scanline: repeating-linear-gradient(180deg, rgba(231,238,251,.014) 0 1px, transparent 1px 3px);
+  --cj-particle: radial-gradient(rgba(79,216,255,.05) 1px, transparent 1px);
+  --cj-grid-etch: linear-gradient(rgba(38,64,95,.28) 1px, transparent 1px),
+                  linear-gradient(90deg, rgba(38,64,95,.28) 1px, transparent 1px);
+
+  /* typography (§6) — OPEN-D1 decision: no webfont is fetched; ui-monospace
+     and the system stacks carry the skin, so the page never waits on a font. */
+  --cj-font-sans: 'Inter var', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --cj-font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* spacing scale (§3, 8px base) */
+  --cj-s1: 4px; --cj-s2: 6px; --cj-s3: 8px; --cj-s4: 12px;
+  --cj-s5: 16px; --cj-s6: 24px; --cj-s7: 32px;
+  --cj-t-metric: 22px; --cj-t-h1: 18px; --cj-t-h2: 16px; --cj-t-body: 13px;
+  --cj-t-small: 12px; --cj-t-micro: 10.5px; --cj-t-label: 10px;
+
+  /* ── legacy names, re-pointed (§11.2 mapping; names preserved, §2.7-safe values) ── */
+  --bg: var(--cj-void);        /* was #0b0e14 */
+  --bg2: var(--cj-deep);       /* was #10141d  (wells/lanes; table heads overridden to inset) */
+  --card: var(--cj-panel);     /* was #141926 */
+  --card2: var(--cj-panel-2);  /* was #1a2030 */
+  --line: var(--cj-line);      /* was #232b3d */
+  --line2: var(--cj-line-2);   /* was #2c3650 */
+  --fg: var(--cj-fg);          /* was #eef1f7 */
+  --muted: var(--cj-fg-dim);   /* was #8b95ab */
+  --dim: var(--cj-fg-faint);   /* was #5c6780 — retired for the sub-4.5 text tier (§2.7) */
+  --gold: var(--cj-amber);     /* folded into amber (§11.2) */
+  --cyan: var(--cj-cyan);
+  --rose: var(--cj-rose);
+  --emerald: var(--cj-emerald);
+  --violet: var(--cj-violet);
+  --amber: var(--cj-amber);
+
+  --radius-sm: var(--cj-radius-sm);
+  --radius-md: var(--cj-radius-md);
+  --radius-lg: var(--cj-radius-lg);
+  --shadow-card: var(--cj-elev-1);
+  --shadow-pop: none;          /* violet glow deleted (§11.2); surfaces gain rings instead */
+  --lane-min: 260px;
+  --lane-gap: 12px;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  background:
+    radial-gradient(1200px 600px at 85% -10%, rgba(149, 128, 201, .14), transparent 60%),
+    radial-gradient(900px 500px at 0% 0%, rgba(90, 185, 212, .10), transparent 55%),
+    var(--bg);
+  color: var(--fg);
+  min-height: 100vh;
+  padding: 28px 32px 60px;
+}
+
+.wrap { max-width: 100%; margin: 0 auto; }
+
+/* ── header ─────────────────────────────────────────────────────────── */
+.c-header {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  gap: 24px; flex-wrap: wrap; margin-bottom: 20px;
+}
+.c-brand { display: flex; align-items: center; gap: 14px; }
+.c-logo {
+  width: 44px; height: 44px; border-radius: 13px; flex: none;
+  background: linear-gradient(135deg, var(--violet), var(--cyan));
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 19px; color: var(--bg);
+  box-shadow: var(--shadow-pop);
+}
+.c-brand h1 {
+  font-family: 'DM Serif Display', Georgia, serif; font-weight: 700;
+  font-size: 26px; letter-spacing: .2px; line-height: 1;
+  margin: 0;
+}
+.c-brand .c-tag { color: var(--muted); font-size: 12.5px; margin-top: 5px; letter-spacing: .4px; }
+
+.c-header-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+/* ── banner ─────────────────────────────────────────────────────────── */
+.c-banner {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  padding: 12px 16px; border-radius: var(--radius-md); margin-bottom: 16px;
+  font-size: 12.5px; border: 1px solid var(--line2);
+  background: linear-gradient(135deg, rgba(212, 120, 138, .10), rgba(212, 168, 83, .06));
+  color: var(--muted);
+}
+.c-banner .c-badge-label {
+  font-weight: 800; letter-spacing: .5px; text-transform: uppercase;
+  font-size: 11px; color: var(--gold);
+}
+
+/* ── buttons / inputs ───────────────────────────────────────────────── */
+.c-btn {
+  font: inherit; font-size: 12.5px; cursor: pointer;
+  border: 1px solid var(--line2); border-radius: var(--radius-sm);
+  background: var(--card2); color: var(--fg);
+  padding: 6px 12px;
+}
+.c-btn:hover { border-color: var(--violet); }
+.c-btn:disabled { opacity: .55; cursor: default; }
+.c-btn.primary { background: linear-gradient(135deg, var(--violet), var(--cyan)); color: var(--bg); border-color: transparent; font-weight: 700; }
+.c-btn.ghost { background: transparent; color: var(--muted); }
+.c-btn.tiny { padding: 2px 8px; font-size: 11px; }
+
+.c-filter {
+  font: inherit; font-size: 12.5px; color: var(--fg);
+  background: var(--bg2); border: 1px solid var(--line);
+  border-radius: var(--radius-sm); padding: 6px 10px; min-width: 220px;
+}
+
+/* ── current-state summary ───────────────────────────────────────────── */
+.c-current-state {
+  display: grid; grid-template-columns: minmax(240px, 1.15fr) 2fr; gap: 16px;
+  align-items: stretch; margin: 0 0 14px; padding: 16px;
+  border: 1px solid var(--line2); border-radius: var(--radius-md);
+  background: linear-gradient(110deg, rgba(90, 185, 212, .10), rgba(149, 128, 201, .08)), var(--bg2);
+}
+.c-current-state-copy h2 { margin: 0; font-size: 20px; letter-spacing: .01em; }
+.c-current-state-copy p { margin: 6px 0 5px; color: var(--fg); font-size: 14px; line-height: 1.4; }
+.c-state-scope { color: var(--dim); font-size: 10px; }
+.c-state-metrics { display: grid; grid-template-columns: repeat(7, minmax(75px, 1fr)); gap: 7px; }
+.c-state-metric { min-width: 0; padding: 8px 9px; border-left: 1px solid var(--line2); }
+.c-state-metric strong { display: block; color: var(--fg); font-size: 22px; line-height: 1; font-variant-numeric: tabular-nums; }
+.c-state-metric span { display: block; margin-top: 6px; color: var(--muted); font-size: 10px; line-height: 1.15; }
+
+/* ── card condition ──────────────────────────────────────────────────── */
+.c-condition-row { display: flex; align-items: baseline; gap: 7px; min-width: 0; margin-top: 7px; padding: 6px 0; border-top: 1px solid var(--line); }
+.c-condition-label { flex: none; color: var(--dim); font-size: 10px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; }
+.c-condition-value { min-width: 0; overflow: hidden; color: var(--fg); font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+.c-condition-age { flex: none; margin-left: auto; color: var(--muted); font-size: 10px; white-space: nowrap; }
+.c-primary-session { display: flex; align-items: baseline; gap: 7px; margin-top: 3px; color: var(--dim); font-size: 10px; overflow: hidden; }
+.c-primary-session code { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.c-board {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(var(--lane-min), 1fr));
+  gap: var(--lane-gap);
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+.c-lane {
+  border: 1px solid var(--line); border-radius: var(--radius-md);
+  padding: 8px; min-height: 220px; min-width: var(--lane-min);
+  background: var(--bg2);
+  display: flex; flex-direction: column;
+}
+.c-lane.drop-target { border: 2px dashed var(--line2); }
+.c-lane-header {
+  position: sticky; top: 0; z-index: 1;
+  background: var(--bg2);
+  font-weight: 700; font-size: 11px; text-transform: uppercase;
+  letter-spacing: .06em; color: var(--muted);
+  padding-bottom: 6px; border-bottom: 1px solid var(--line);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.c-lane-header .c-count { color: var(--dim); font-size: 11px; }
+.c-lane-body { display: flex; flex-direction: column; gap: 0; padding-top: 6px; }
+.c-lane-empty { color: var(--dim); font-size: 12px; padding: 12px 4px; text-align: center; }
+
+/* ── card ───────────────────────────────────────────────────────────── */
+.c-card {
+  border: 1px solid var(--line2); border-radius: var(--radius-sm);
+  padding: 12px; margin-bottom: 12px; background: var(--card);
+  cursor: grab;
+}
+.c-card.pending { opacity: .6; }
+.c-card:focus { outline: 2px solid var(--lime, var(--cyan)); outline-offset: 2px; }
+.c-card:focus-visible { outline: 2px solid var(--cyan); }
+.c-card-urgent { border-color: var(--rose); box-shadow: 0 0 0 1px rgba(212, 120, 138, .35); }
+.c-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.c-row + .c-row { margin-top: 6px; }
+.c-card-name {
+  background: transparent; border: none; color: var(--fg); cursor: pointer;
+  text-align: left; font: inherit; font-size: 14px; font-weight: 600; padding: 0;
+}
+.c-card-name:hover { color: var(--cyan); }
+/* section wrapper — the hairline keeps taller cards scannable */
+.c-block { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--line); }
+.c-block-label {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 10px; font-weight: 700; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--dim);
+  margin-bottom: 4px;
+}
+.c-summary {
+  font-size: 13px; line-height: 1.4; color: var(--fg);
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+}
+.c-leftoff {
+  font-size: 13px; line-height: 1.4; color: var(--fg);
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.c-meta { color: var(--muted); font-size: 12px; padding-top: 4px; }
+.c-session { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; padding-top: 6px; }
+.c-session code, .c-card code { color: var(--dim); font-size: 11px; }
+.c-link {
+  background: transparent; border: none; color: var(--cyan); cursor: pointer; padding: 0;
+  font: inherit; font-size: 13px; text-align: left;
+  flex: 1; min-width: 0;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.c-more { color: var(--dim); font-size: 11px; }
+.c-card > .c-row:last-of-type { opacity: .72; }
+.c-card > .c-row:last-of-type:hover, .c-card > .c-row:last-of-type:focus-within { opacity: 1; }
+
+/* ── chips / badges ─────────────────────────────────────────────────── */
+.c-chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 20px;
+  background: var(--card2); border: 1px solid var(--line); color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.c-chip.chip-accepted { color: var(--emerald); border-color: rgba(94, 184, 148, .5); }
+.c-chip.chip-candidate { color: var(--muted); }
+.c-chip.chip-urgent { color: var(--rose); border-color: rgba(212, 120, 138, .55); }
+.c-chip.chip-needs { color: var(--amber); border-color: rgba(224, 167, 94, .55); }
+.c-chip.chip-stale { color: var(--amber); border-color: rgba(224, 167, 94, .45); text-transform: none; font-weight: 600; }
+.c-chip.chip-tier { color: var(--cyan); }
+.c-spacer { flex: 1; }
+
+/* ── move menu ──────────────────────────────────────────────────────── */
+.c-menu {
+  border: 1px solid var(--line2); border-radius: var(--radius-sm);
+  padding: 4px; margin-top: 6px; background: var(--card2);
+  display: flex; flex-direction: column; gap: 2px;
+}
+.c-menu-item {
+  background: transparent; border: none; border-radius: 4px;
+  padding: 6px 8px; cursor: pointer; font: inherit; font-size: 12px;
+  text-align: left; color: var(--fg);
+}
+.c-menu-item.highlighted { background: linear-gradient(135deg, var(--violet), var(--cyan)); color: var(--bg); }
+.c-menu-item:focus { outline: 2px solid var(--cyan); outline-offset: 1px; }
+
+/* ── detail panel ───────────────────────────────────────────────────── */
+.c-detail { max-width: 900px; }
+.c-detail h2 { font-size: 20px; margin: 0; }
+.c-detail-section { margin-top: 14px; }
+.c-detail-section h3 { font-size: 13px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 0 0 6px; }
+.c-detail-row { font-size: 12.5px; color: var(--muted); padding: 3px 0; }
+.c-detail-row.evidence { color: var(--muted); }
+.c-resume { font-size: 13px; padding: 3px 0; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
+/* ── states ─────────────────────────────────────────────────────────── */
+.c-empty, .c-error {
+  border: 1px solid var(--line); border-radius: var(--radius-lg);
+  background: var(--card); padding: 20px; color: var(--muted); font-size: 13px;
+}
+.c-error { border-color: rgba(212, 120, 138, .5); }
+.c-error h2 { color: var(--rose); font-size: 16px; margin: 0 0 6px; }
+.c-skeleton {
+  height: 46px; border-radius: var(--radius-sm);
+  background: linear-gradient(90deg, var(--card), var(--card2), var(--card));
+  background-size: 200% 100%; animation: c-shimmer 1.4s infinite;
+  margin-bottom: 8px;
+}
+@keyframes c-shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+.c-toast {
+  position: fixed; right: 20px; bottom: 20px; z-index: 20;
+  background: var(--card2); border: 1px solid var(--line2);
+  border-radius: var(--radius-md); padding: 12px 14px; max-width: 360px;
+  box-shadow: var(--shadow-card); font-size: 13px; color: var(--fg);
+}
+.c-toast .c-toast-actions { display: flex; gap: 8px; margin-top: 8px; }
+
+.c-data-as-of { color: var(--dim); font-size: 11px; padding: 6px 0; }
+.c-visually-hidden {
+  position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden;
+}
+.c-footer-counts { color: var(--dim); font-size: 11px; padding-top: 4px; }
+
+/* ── responsive: stacked reflow below the lane-width breakpoint ─────── */
+/* 8 * 260 + 7 * 12 = 2164 */
+@media (max-width: 2164px) {
+  .c-board { grid-template-columns: 1fr; overflow-x: hidden; }
+  .c-lane { min-width: 0; }
+}
+
+/* ── operator monitor surface ───────────────────────────────────────── */
+.c-monitor-health {
+  display: grid; grid-template-columns: repeat(4, minmax(150px, 1fr)) auto;
+  gap: 1px; margin: 0 0 12px; border: 1px solid var(--line2);
+  border-radius: var(--radius-md); overflow: hidden; background: var(--line);
+}
+.c-health-cell { background: var(--bg2); padding: 9px 11px; min-width: 0; }
+.c-health-key, .c-rail-label, .c-fact-inference { display: block; color: var(--dim); font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.c-health-cell strong { display: block; margin-top: 3px; color: var(--fg); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.c-stale-banner { display: flex; align-items: center; justify-content: center; padding: 8px 12px; background: rgba(224, 167, 94, .16); color: var(--amber); font-size: 11px; font-weight: 700; white-space: nowrap; }
+.c-attention-rail { display: flex; gap: 8px; align-items: stretch; overflow-x: auto; margin: 0 0 14px; padding: 8px; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--bg2); }
+.c-rail-heading { min-width: 142px; padding: 4px 4px 0; display: flex; flex-direction: column; gap: 4px; }
+.c-rail-group { min-width: 145px; max-width: 210px; padding: 5px 8px; border-left: 1px solid var(--line); }
+.c-rail-label { display: flex; justify-content: space-between; gap: 8px; color: var(--muted); }
+.c-rail-label b { color: var(--fg); font-size: 12px; }
+.c-rail-items { display: flex; flex-direction: column; gap: 3px; margin-top: 5px; }
+.c-rail-item { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: left; cursor: pointer; border: 0; background: transparent; color: var(--fg); padding: 2px 0; font: inherit; font-size: 11px; }
+.c-rail-item:hover { color: var(--cyan); }
+.c-rail-empty { color: var(--dim); font-size: 11px; padding-top: 5px; }
+.c-attention-marker { flex: none; padding: 3px 6px; border-radius: 12px; background: var(--card2); color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: .04em; }
+.attention-blocked { color: var(--rose); }.attention-needs_review { color: var(--amber); }.attention-waiting_on_user { color: var(--cyan); }.attention-stale_with_commitment { color: var(--amber); }.attention-urgent { color: var(--rose); }
+.c-receipt { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; margin-top: 12px; padding: 9px 11px; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--bg2); color: var(--muted); font-size: 11px; }
+.c-receipt strong { color: var(--fg); font-size: 12px; }.c-receipt span { border-left: 1px solid var(--line2); padding-left: 10px; }.c-receipt .c-fact-inference { color: var(--dim); border-left: 0; padding-left: 0; }
+@media (max-width: 900px) { .c-monitor-health { grid-template-columns: repeat(2, 1fr); } .c-stale-banner { grid-column: 1 / -1; } .c-attention-rail { align-items: stretch; } }
+@media (max-width: 900px) {
+  .c-current-state { grid-template-columns: 1fr; }
+  .c-state-metrics { grid-template-columns: repeat(4, minmax(75px, 1fr)); }
+  .c-state-metric { border-left: 0; border-top: 1px solid var(--line2); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, .c-card, .c-skeleton, .c-menu-item { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+
+/* ── M4 Continuity Playground: view / sort / filter toolbar ─────────── */
+/* Controls are built in app.js (index.html is frozen): no colour-only meaning,
+   every control is a real button or select with an accessible name. */
+.c-toolbar {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  margin: 0 0 14px; padding: 8px 12px;
+  border: 1px solid var(--line); border-radius: var(--radius-md);
+  background: var(--bg2);
+}
+.c-tb-label {
+  font-size: 10px; font-weight: 700; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--dim);
+}
+.c-select {
+  font: inherit; font-size: 12.5px; color: var(--fg);
+  background: var(--card2); border: 1px solid var(--line2);
+  border-radius: var(--radius-sm); padding: 5px 8px; min-height: 28px;
+}
+
+/* ── Today reference groups (START HERE / REDISCOVER) ────────────────── */
+.c-playground {
+  border: 1px solid var(--line); border-radius: var(--radius-md);
+  background: var(--bg2); padding: 8px 12px; margin-bottom: 14px;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.c-pg-group { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.c-pg-label {
+  font-size: 10px; font-weight: 700; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--dim); min-width: 92px;
+}
+.c-pg-refs { display: flex; gap: 6px; flex-wrap: wrap; }
+.c-pg-omitted { font-size: 11px; color: var(--dim); }
+
+/* grounded aggregates on a card */
+.c-counts { font-size: 11.5px; }
+
+/* ── session pane (Shayba D-SP-4/5/6/8/9/10) ─────────────────────────── */
+.c-resume-block { padding: 2px 0; }
+.c-pane-toggle { min-height: 24px; }
+.c-pane {
+  border: 1px solid var(--line); border-radius: var(--radius-sm);
+  background: var(--bg2); padding: 8px 10px; margin: 6px 0 8px;
+  max-height: 340px; overflow-y: auto;
+}
+.c-pane-block { margin-top: 4px; padding-top: 6px; border-top: 1px solid var(--line); }
+.c-pane-block:first-child { margin-top: 0; border-top: none; padding-top: 0; }
+.c-pane-list { list-style: none; margin: 0; padding: 0; }
+.c-pane-row {
+  border-left: 2px solid var(--line);
+  padding: 3px 0 3px 8px; margin: 0 0 4px;
+  font-size: 12.5px; line-height: 1.4; color: var(--fg);
+}
+.c-pane-row.is-you { border-left-color: var(--cyan); }
+.c-pane-role {
+  display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .06em;
+  color: var(--muted); margin-right: 6px;
+}
+.c-pane-role.is-you { color: var(--cyan); }
+.c-pane-time { font-size: 11px; color: var(--muted); }
+.c-pane-text {
+  margin-top: 2px; color: var(--fg); white-space: pre-wrap; overflow-wrap: anywhere;
+}
+/* D-SP-8: the clamp belongs to a capture-clipped row only; an unclipped row reads in full. */
+.c-pane-row.is-clipped .c-pane-text {
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+}
+.c-pane-row.is-agent .c-pane-text { color: var(--fg); }
+.c-chip.chip-excerpt { color: var(--amber); border-color: rgba(224, 167, 94, .45); text-transform: none; }
+.c-pane-status { font-size: 12px; color: var(--muted); padding: 4px 0; }
+.c-pane-omitted { font-size: 11px; color: var(--dim); padding-top: 4px; }
+.c-filter-pending { font-size: 12px; color: var(--muted); padding: 4px 0 8px; }
+.c-pane-window { font-size: 11px; color: var(--dim); padding-top: 6px; }
+
+/* ── MC — mission-control header: snapshot age + structured scan state (MC-L4/MC-L5) ── */
+.c-mission-control {
+  margin: 0 0 12px; padding: 12px 14px;
+  border: 1px solid var(--line2); border-radius: var(--radius-md);
+  background: linear-gradient(110deg, rgba(149, 128, 201, .10), rgba(90, 185, 212, .07)), var(--bg2);
+}
+.c-mc-head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.c-mc-head h2 { margin: 0; font-size: 18px; letter-spacing: .01em; }
+.c-mc-snapshot { margin-top: 6px; color: var(--muted); font-size: 12.5px; }
+.c-mc-time { color: var(--fg); font-variant-numeric: tabular-nums; }
+.c-mc-scan {
+  color: var(--muted); font-size: 11.5px; font-variant-numeric: tabular-nums;
+  border-left: 1px solid var(--line2); padding-left: 10px;
+}
+.c-mc-scan.is-running { color: var(--cyan); }
+.c-mc-scan.is-error { color: var(--rose); }
+
+/* ── MC — attention rail overflow line (Frida UX-07) ─────────────────────────────── */
+.c-rail-more { color: var(--dim); font-size: 10px; padding-top: 4px; }
+
+/* ── MC — dense grid (Frida UX-08/UX-09/UX-24) ───────────────────────────────────── */
+.c-grid-wrap { overflow-x: auto; padding-bottom: 8px; }
+.c-grid {
+  width: 100%; border-collapse: collapse; table-layout: fixed;
+  font-size: 12px; font-variant-numeric: tabular-nums;
+}
+.c-grid thead th {
+  position: sticky; top: 0; z-index: 1; background: var(--bg2);
+  text-align: left; vertical-align: bottom;
+  font-size: 10px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
+  color: var(--dim); border-bottom: 1px solid var(--line2); padding: 6px 8px;
+}
+.c-grid tbody td, .c-grid tbody th {
+  text-align: left; vertical-align: top; padding: 8px;
+  border-bottom: 1px solid var(--line); font-weight: 400; color: var(--fg);
+}
+.c-grid-project { min-width: 0; }
+.c-grid-project .c-card-name { font-size: 14px; font-weight: 600; }
+.c-grid-ref { display: block; margin-top: 4px; color: var(--dim); font-size: 11px; overflow-wrap: anywhere; }
+.c-grid-plain { color: var(--fg); }
+.c-grid-sub { display: block; margin-top: 3px; color: var(--muted); font-size: 10.5px; }
+.c-grid .c-attention-marker { margin-left: 6px; }
+
+/* A derived value is a real control that opens its claim source (MC-L6 / UX-11). */
+.c-claim {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 2px;
+  width: 100%; text-align: left; cursor: pointer;
+  background: transparent; border: 1px solid transparent; border-radius: var(--radius-sm);
+  padding: 3px 5px; font: inherit; color: var(--fg);
+}
+.c-claim:hover { border-color: var(--line2); }
+.c-claim:focus-visible { outline: 2px solid var(--cyan); outline-offset: 1px; }
+.c-claim-hint {
+  color: var(--dim); font-size: 10px; text-transform: uppercase; letter-spacing: .06em;
+}
+.c-claim:hover .c-claim-hint { color: var(--cyan); }
+
+/* ── MC — evidence drawer (Frida UX-11/UX-12) ────────────────────────────────────── */
+.c-evidence-drawer {
+  position: fixed; right: 20px; bottom: 20px; z-index: 30;
+  width: min(520px, calc(100vw - 40px)); max-height: 70vh; overflow-y: auto;
+  background: var(--card2); border: 1px solid var(--line2);
+  border-radius: var(--radius-md); box-shadow: var(--shadow-card);
+  padding: 12px 14px; color: var(--fg);
+}
+.c-evidence-drawer:focus, .c-evidence-drawer:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+.c-ev-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.c-ev-head strong { font-size: 13px; }
+.c-ev-basis { margin-top: 5px; color: var(--muted); font-size: 11.5px; }
+.c-ev-list { list-style: none; margin: 8px 0 0; padding: 0; }
+.c-ev-row { border-left: 2px solid var(--line2); padding: 5px 0 5px 9px; margin-bottom: 6px; }
+.c-ev-kind { color: var(--muted); font-size: 11px; }
+.c-ev-hash, .c-ev-time { color: var(--dim); font-size: 10.5px; }
+.c-ev-excerpt { margin-top: 4px; color: var(--fg); font-size: 12px; line-height: 1.4; }
+.c-ev-identity { margin-top: 6px; color: var(--dim); font-size: 10.5px; }
+.c-ev-footer { margin-top: 8px; padding-top: 6px; border-top: 1px solid var(--line); color: var(--dim); font-size: 10.5px; }
+
+/* ── MC — staleness bands (Frida UX-13/UX-14) ────────────────────────────────────── */
+.c-bands {
+  margin: 0 0 14px; padding: 9px 12px;
+  border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--bg2);
+}
+.c-band-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.c-band-head strong { font-size: 12.5px; }
+.c-band-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 7px; }
+.c-band {
+  display: inline-flex; align-items: baseline; gap: 7px;
+  border: 1px solid var(--line2); border-radius: var(--radius-sm);
+  background: var(--card2); color: var(--fg); font: inherit; font-size: 11.5px;
+  padding: 4px 10px; cursor: pointer;
+}
+.c-band:hover { border-color: var(--violet); }
+.c-band:focus-visible { outline: 2px solid var(--cyan); outline-offset: 1px; }
+.c-band.active { border-color: var(--cyan); }
+.c-band-label { color: var(--muted); text-transform: none; letter-spacing: .02em; }
+.c-band-count { color: var(--fg); font-variant-numeric: tabular-nums; }
+/* Quiet is low-emphasis but fully present, and it is not an alert (INV-MC-6). */
+.c-band.quiet { border-style: dashed; background: transparent; cursor: default; }
+.c-band.quiet .c-band-label { color: var(--dim); }
+
+/* ── Task Home panel (TH §3/§6) — server fields only; final copy is Frida's (OPEN-1) ── */
+.c-task-home {
+  margin: 0 0 14px; padding: 9px 12px;
+  border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--bg2);
+}
+.c-th-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.c-th-head strong { font-size: 12.5px; }
+.c-th-cli {
+  display: block; margin-top: 7px; padding: 4px 8px; overflow-x: auto;
+  border: 1px dashed var(--line2); border-radius: var(--radius-sm);
+  color: var(--muted); font-size: 11px; white-space: nowrap;
+}
+.c-th-src { margin-top: 4px; color: var(--dim); font-size: 10.5px; overflow-wrap: anywhere; }
+.c-th-groups { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 7px; }
+.c-th-group {
+  display: inline-flex; align-items: baseline; gap: 7px;
+  border: 1px solid var(--line2); border-radius: var(--radius-sm);
+  background: var(--card2); color: var(--fg); font: inherit; font-size: 11.5px;
+  padding: 4px 10px; cursor: pointer;
+}
+.c-th-group:hover { border-color: var(--violet); }
+.c-th-group:focus-visible { outline: 2px solid var(--cyan); outline-offset: 1px; }
+.c-th-group.active { border-color: var(--cyan); }
+.c-th-group-label { color: var(--muted); }
+.c-th-group-count { color: var(--fg); font-variant-numeric: tabular-nums; }
+.c-th-conflicts { margin-top: 7px; }
+.c-th-conflict { color: var(--amber); font-size: 11px; }
+.c-th-warnings { margin-top: 5px; color: var(--dim); font-size: 10.5px; }
+.c-th-items { margin-top: 7px; display: flex; flex-direction: column; gap: 3px; }
+.c-th-item {
+  display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap;
+  font-size: 11.5px; color: var(--fg);
+}
+.c-th-item.source-only .c-th-key { color: var(--muted); }
+.c-th-key { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+.c-chip.warn { border-color: var(--amber); color: var(--amber); }
+
+/* ── MC — Recovery Inbox (Frida UX-15..UX-18) ────────────────────────────────────── */
+.c-inbox {
+  margin-top: 14px; padding: 12px 14px;
+  border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--bg2);
+}
+.c-inbox-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.c-inbox-head strong { font-size: 13px; }
+.c-inbox-triage { margin-top: 5px; color: var(--muted); font-size: 11.5px; }
+.c-inbox-zero { margin-top: 7px; color: var(--muted); font-size: 12.5px; }
+.c-inbox-order { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-direction: column; gap: 3px; }
+.c-inbox-order li { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.c-inbox-rank { color: var(--dim); font-size: 11px; font-variant-numeric: tabular-nums; min-width: 28px; }
+.c-inbox-suppressed { margin-top: 9px; padding-top: 7px; border-top: 1px solid var(--line); color: var(--muted); font-size: 11.5px; }
+
+/* ── MC — filter summary + empty actions (Frida UX-19/UX-20/UX-22) ───────────────── */
+.c-filter-summary {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  margin-bottom: 10px; padding: 6px 10px;
+  border: 1px solid var(--line); border-radius: var(--radius-sm);
+  background: var(--bg2); color: var(--muted); font-size: 11.5px;
+}
+.c-tb-hint { color: var(--dim); font-size: 10.5px; }
+.c-empty-actions { display: flex; gap: 8px; flex-wrap: wrap; padding-top: 10px; }
+.c-lane-empty-action { margin-top: 6px; color: var(--muted); font-size: 11px; font-weight: 700; }
+.c-lane-empty-hint { margin-top: 3px; color: var(--dim); font-size: 10.5px; }
+
+/* Frida UX-24: below the grid breakpoint the dense grid becomes a labelled row list with the
+   same columns — never clipped horizontal text. */
+@media (max-width: 1100px) {
+  .c-grid-wrap { overflow-x: hidden; }
+  .c-grid, .c-grid thead, .c-grid tbody, .c-grid tr, .c-grid td, .c-grid th { display: block; width: auto; }
+  .c-grid thead { position: absolute; left: -9999px; }
+  .c-grid tbody tr { border: 1px solid var(--line2); border-radius: var(--radius-sm); margin-bottom: 10px; background: var(--card); }
+  .c-grid tbody th, .c-grid tbody td { border-bottom: 1px solid var(--line); padding: 6px 10px; }
+  .c-grid tbody td::before {
+    content: attr(data-label); display: block; color: var(--dim); font-size: 10px;
+    font-weight: 700; letter-spacing: .07em; text-transform: uppercase; margin-bottom: 2px;
+  }
+  .c-grid tbody th::before { content: ''; }
+}
+@media (max-width: 900px) {
+  .c-evidence-drawer { left: 12px; right: 12px; width: auto; }
+}
+
+/* ── Orda action-log view (AL-L6/AL-L15): flat action table, distinct from the board ── */
+.c-al { margin: 12px 0; }
+.c-al-head { margin-bottom: 6px; }
+.c-al-title { margin: 0; font-size: 16px; letter-spacing: .04em; }
+.c-al-sub { margin: 2px 0 0; color: var(--muted); font-size: 12px; }
+.c-al-bar {
+  display: flex; flex-wrap: wrap; gap: 10px; padding: 6px 0;
+  border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+}
+.c-al-stat { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+.c-al-filters { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 8px 0; }
+.c-al-field { display: inline-flex; align-items: center; gap: 6px; }
+.c-al-num { width: 130px; }
+.c-al-table-wrap { overflow-x: auto; }
+.c-al-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.c-al-table th {
+  text-align: left; color: var(--muted); font-weight: 600; padding: 6px 8px;
+  border-bottom: 1px solid var(--line);
+}
+.c-al-table td { padding: 6px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.c-al-row:hover { background: rgba(149, 128, 201, .08); }
+.c-al-row.archived { opacity: .6; }
+.c-al-chip {
+  display: inline-block; padding: 1px 6px; border: 1px solid var(--line);
+  border-radius: 999px; font-size: 11px;
+}
+.c-al-target { max-width: 340px; word-break: break-all; }
+.c-al-evidence { color: var(--cyan); word-break: break-all; }
+.c-al-meta { color: var(--muted); font-size: 11px; }
+.c-al-empty { padding: 16px; color: var(--muted); }
+.c-al-pager { display: flex; align-items: center; gap: 10px; padding: 10px 0; }
+@media (max-width: 900px) {
+  .c-al-target { max-width: 180px; }
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   JARVIS SKIN — Frida dashboard-design handoff (frida-design.md, STABLE).
+   Everything below is presentational: it restyles the surfaces app.js emits.
+   No selector is renamed, no string is changed, no server field is derived.
+   Section refs (§n) cite the design artifact.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* ── shell (§3): void base + field-grid etch + particle band (§7.3/§7.4) ────────
+   The decorative layer lives in body pseudo-elements only: fixed, pointer-events
+   none, under the content (P10). Removing these rules changes no comprehension. */
+body {
+  font-family: var(--cj-font-sans);
+  background: var(--cj-void);
+  color: var(--cj-fg);
+  padding: 20px 24px 48px;                       /* §3 tightened shell padding */
+}
+body::before {
+  content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image:
+    repeating-linear-gradient(180deg, rgba(231,238,251,.014) 0 1px, transparent 1px 3px),
+    linear-gradient(rgba(38,64,95,.28) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(38,64,95,.28) 1px, transparent 1px);
+  background-size: auto, 32px 32px, 32px 32px;
+  -webkit-mask-image: linear-gradient(180deg, #000 0 120px, rgba(0,0,0,.35) 420px, transparent 60vh);
+          mask-image: linear-gradient(180deg, #000 0 120px, rgba(0,0,0,.35) 420px, transparent 60vh);
+}
+body::after {                                    /* particles: header band only */
+  content: ""; position: fixed; top: 0; left: 0; right: 0; height: 120px; z-index: 0;
+  pointer-events: none; opacity: .35;
+  background-image: var(--cj-particle); background-size: 18px 18px;
+}
+.wrap { position: relative; z-index: 1; }
+
+/* ── header: HUD bezel (§3) ─────────────────────────────────────────────── */
+.c-header {
+  min-height: 44px; align-items: center;
+  border-bottom: 1px solid var(--cj-line-2);
+  padding-bottom: var(--cj-s3); margin-bottom: var(--cj-s5);
+}
+/* §7.1 brand ring: the logo becomes the product's status lamp.
+   1.5px cyan arc spanning 300° (gap to the upper-right) + 12px core dot:
+   emerald when a scan is committed, cyan while scanning, amber when it errored. */
+.c-logo {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: none; box-shadow: none; color: transparent; font-size: 0;
+  position: relative; flex: none;
+}
+.c-logo::before {
+  content: ""; position: absolute; inset: 0; border-radius: 50%;
+  background: conic-gradient(from 75deg, rgba(79,216,255,.85) 0 300deg, transparent 300deg 360deg);
+  -webkit-mask: radial-gradient(closest-side, transparent calc(100% - 1.5px), #000 calc(100% - 1.5px));
+          mask: radial-gradient(closest-side, transparent calc(100% - 1.5px), #000 calc(100% - 1.5px));
+}
+.c-logo::after {
+  content: ""; position: absolute; left: 50%; top: 50%; width: 12px; height: 12px;
+  margin: -6px 0 0 -6px; border-radius: 50%; background: var(--cj-emerald);
+  transition: background-color 90ms linear;
+}
+body:has(.c-mc-scan.is-running) .c-logo::after { background: var(--cj-cyan); }
+body:has(.c-mc-scan.is-error) .c-logo::after { background: var(--cj-amber); }
+/* §6: the serif wordmark is removed — uppercase instrument sans. */
+.c-brand h1 {
+  font-family: var(--cj-font-sans); font-size: var(--cj-t-h1); font-weight: 600;
+  letter-spacing: .06em; text-transform: uppercase; color: var(--cj-fg);
+}
+.c-brand .c-tag { color: var(--cj-fg-dim); font-size: 11px; letter-spacing: .04em; }
+
+/* ── banner (§3): flat informational strip, 2px amber left rule, copy intact ── */
+.c-banner {
+  background: var(--cj-deep); border: none;
+  border-left: 2px solid var(--cj-amber);
+  border-radius: var(--cj-radius-sm); color: var(--cj-fg-2);
+  padding: 10px 14px;
+}
+.c-banner .c-badge-label { color: var(--cj-amber); }   /* amber on void ≥10:1 (§3) */
+
+/* ── controls (§3/§10.3): instrument wells, one primary button ───────────── */
+.c-btn {
+  background: var(--cj-panel-2); border: 1px solid var(--cj-line-2);
+  color: var(--cj-fg-2); border-radius: var(--cj-radius-sm);
+  min-height: 28px;                               /* §10.3 desktop hit target */
+  transition: border-color 90ms linear, color 90ms linear;
+}
+.c-btn:hover { border-color: var(--cj-line-hot); color: var(--cj-fg); }
+.c-btn:disabled { opacity: .55; }
+/* The explicit scan is the single brightest control on the page (flat, no gradient). */
+.c-btn.primary {
+  background: var(--cj-cyan); color: var(--cj-void);
+  border-color: var(--cj-cyan); font-weight: 700;
+}
+.c-btn.ghost { background: transparent; border-color: var(--cj-line); color: var(--cj-fg-dim); }
+.c-btn.tiny { min-height: 28px; }
+.c-filter, .c-select, .c-input {
+  font-size: 12.5px; color: var(--cj-fg);
+  background: var(--cj-inset); border: 1px solid var(--cj-line);
+  border-radius: var(--cj-radius-sm); caret-color: var(--cj-cyan);
+  min-height: 28px;
+}
+.c-filter { font-family: var(--cj-font-mono); }
+.c-filter::placeholder { color: var(--cj-fg-faint); font-family: var(--cj-font-mono); }
+.c-input { font: inherit; padding: 5px 8px; }
+
+/* ── L1 arc tick (§7.2): eight rails read as one console ─────────────────── */
+.c-mc-head h2::before, .c-current-state-copy h2::before, .c-rail-heading strong::before,
+.c-band-head strong::before, .c-th-head strong::before, .c-inbox-head strong::before,
+.c-al-title::before {
+  content: ""; display: inline-block; width: 3px; height: 10px;
+  margin-right: 7px; vertical-align: baseline;
+  border-radius: 3px 0 0 0; background: var(--cj-cyan-deep);
+}
+/* L1 heading type (§3): 12.5/700 uppercase .1em fg-dim — the DOM words are the server's. */
+.c-rail-heading strong, .c-band-head strong, .c-th-head strong,
+.c-inbox-head strong, .c-al-title {
+  font-size: 12.5px; font-weight: 700; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--cj-fg-dim);
+}
+.c-mc-head h2 { font-size: var(--cj-t-h2); font-weight: 600; letter-spacing: .02em; color: var(--cj-fg); }
+.c-current-state-copy h2 { font-size: var(--cj-t-h1); font-weight: 600; letter-spacing: .02em; color: var(--cj-fg); }
+
+/* ── the one live pulse (§5.1/§8): only a running scan animates (2.4s) ─────── */
+@keyframes cj-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(79,216,255,.55); }
+  70%  { box-shadow: 0 0 0 7px rgba(79,216,255,0); }
+  100% { box-shadow: 0 0 0 0 rgba(79,216,255,0); }
+}
+.cj-live { animation: cj-pulse 2.4s cubic-bezier(.4,0,.2,1) infinite; }
+.c-mc-scan { position: relative; padding-left: 14px; font-family: var(--cj-font-mono); }
+.c-mc-scan::before {
+  content: ""; position: absolute; left: 0; top: 50%; width: 6px; height: 6px;
+  margin-top: -3px; border-radius: 50%; background: var(--cj-cyan-deep);
+}
+.c-mc-scan.is-running { color: var(--cj-cyan); }
+.c-mc-scan.is-running::before {
+  background: var(--cj-cyan);
+  animation: cj-pulse 2.4s cubic-bezier(.4,0,.2,1) infinite;   /* the page's one pulse */
+}
+/* §5: an errored scan carries a static `!` glyph — the state survives greyscale. */
+.c-mc-scan.is-error { color: var(--cj-rose); }
+.c-mc-scan.is-error::before {
+  content: "!"; width: auto; height: auto; margin: 0; border-radius: 0;
+  background: none; color: var(--cj-rose); font-weight: 800; font-size: 11px;
+  top: 1px; line-height: 1;
+}
+
+/* ── focus (§10.2): one ring style everywhere, never removed ──────────────── */
+:focus-visible { outline: 2px solid var(--cj-cyan); outline-offset: 2px; }
+.c-card, .c-card:focus, .c-card:focus-visible, .c-menu-item:focus, .c-menu-item:focus-visible,
+.c-claim:focus-visible, .c-band:focus-visible, .c-th-group:focus-visible,
+.c-evidence-drawer:focus, .c-evidence-drawer:focus-visible, .c-btn:focus-visible,
+.c-select:focus-visible, .c-input:focus-visible, .c-filter:focus-visible {
+  outline: 2px solid var(--cj-cyan); outline-offset: 2px;
+}
+
+/* ── panel recipe (§4.1): one wash of cyan at the top edge, hairline highlight ── */
+.c-current-state, .c-mission-control, .c-task-home, .c-bands, .c-attention-rail,
+.c-inbox, .c-playground, .c-toolbar {
+  background: linear-gradient(180deg, rgba(79,216,255,.03), transparent 42%), var(--cj-panel);
+  border: 1px solid var(--cj-line-2); border-radius: var(--cj-radius-md);
+  box-shadow: var(--cj-elev-1), inset 0 1px 0 rgba(231,238,251,.03);
+}
+
+/* ── numerals (§6): instrument readouts are tabular monospace ─────────────── */
+.c-health-cell strong, .c-state-metric strong, .c-band-count, .c-th-group-count,
+.c-th-key, .c-th-cli, .c-lane-header .c-count, .c-rail-label b, .c-inbox-rank,
+.c-mc-time, .c-condition-age, .c-counts, .c-data-as-of, .c-footer-counts,
+.c-card code, .c-session code, .c-ev-hash, .c-ev-time, .c-grid-ref, .c-al-stat {
+  font-family: var(--cj-font-mono); font-variant-numeric: tabular-nums;
+}
+/* §4.3/A12: metric numbers read at 22px in --cj-cyan (11.89:1 on the inset well);
+   §2.7 requires the value tier to survive the AA spot-check, so the readout uses
+   the resting cyan, not the 3.45:1 cyan-deep structure tone. */
+.c-state-metric strong { color: var(--cj-cyan); }
+.c-health-cell strong { color: var(--cj-fg); }
+
+/* ── §4.2 mission control + health strip ────────────────────────────────── */
+.c-monitor-health { border-color: var(--cj-line-2); background: var(--cj-line); }
+.c-health-cell { background: var(--cj-inset); }
+.c-health-key { color: var(--cj-fg-dim); }
+.c-stale-banner {
+  background: var(--cj-deep); color: var(--cj-amber);
+  border-top: 2px solid var(--cj-amber);
+}
+
+/* ── §4.3 current state: segmented readout on inset wells ───────────────── */
+.c-state-metric { border-left: 1px solid var(--cj-line); background: var(--cj-inset); }
+.c-state-metric span { color: var(--cj-fg-dim); font-size: var(--cj-t-label); letter-spacing: .06em; }
+.c-state-scope { color: var(--cj-fg-faint); }
+.c-current-state-copy p { color: var(--cj-fg-2); }
+
+/* ── §4.4 Task Home: server fields untouched; segmented group rail ───────── */
+.c-th-src { color: var(--cj-fg-faint); font-family: var(--cj-font-mono); }
+.c-th-cli { color: var(--cj-fg-dim); border-color: var(--cj-line); background: var(--cj-inset); }
+.c-th-groups { background: var(--cj-inset); border: 1px solid var(--cj-line); border-radius: var(--cj-radius-sm); padding: 4px; }
+.c-th-group { background: transparent; border: none; }
+.c-th-group-label { color: var(--cj-fg-dim); }
+.c-th-group-count { color: var(--cj-fg); }
+.c-th-group:hover { border-color: transparent; box-shadow: inset 0 0 0 1px var(--cj-line-2); }
+.c-th-group.active {
+  border: none; box-shadow: inset 0 -2px 0 0 var(--cj-cyan);
+}
+.c-th-group.active .c-th-group-count { color: var(--cj-cyan); }
+.cj-fresh { color: var(--cj-emerald); }
+.cj-stale { color: var(--cj-amber); }
+.c-th-conflicts { border-left: 1px solid var(--cj-amber); padding-left: 9px; }
+.c-th-conflict { color: var(--cj-amber); }
+.c-th-warnings { color: var(--cj-fg-faint); }
+.c-th-item.source-only .c-th-key { color: var(--cj-fg-faint); }
+.c-th-key { color: var(--cj-fg); }
+/* §4.4: receipt / confirm-then-close chips are amber outline pills, text verbatim. */
+.c-chip.warn { border: 1px solid rgba(255,180,84,.55); color: var(--cj-amber); background: transparent; }
+
+/* ── §4.5 attention rail ─────────────────────────────────────────────────── */
+.c-rail-heading { color: var(--cj-fg-dim); }
+.c-rail-heading .c-meta, .c-rail-label { color: var(--cj-fg-dim); }
+.c-rail-label b { color: var(--cj-fg); }
+.c-rail-group { border-left-color: var(--cj-line); }
+.c-rail-item { font-size: 11.5px; border-left: 2px solid var(--cj-line); padding-left: 7px; }
+.c-rail-item:hover { color: var(--cj-cyan); background: transparent; }
+.rail-awaiting_user .c-rail-item, .rail-blocked .c-rail-item,
+.rail-stale_active .c-rail-item { border-left-color: rgba(255,180,84,.55); }
+.c-rail-empty, .c-rail-more { color: var(--cj-fg-faint); }
+
+/* ── §4.6 staleness bands: quiet is dashed, non-interactive, unchanged copy ── */
+.c-band { background: var(--cj-inset); border: 1px solid var(--cj-line-2); }
+.c-band-label { color: var(--cj-fg-dim); }
+.c-band-count { color: var(--cj-fg); }
+.c-band:hover { border-color: var(--cj-line-hot); }
+.c-band.active {
+  border-color: var(--cj-cyan);
+  box-shadow: 0 0 0 1px rgba(79,216,255,.14), 0 0 10px -6px rgba(79,216,255,.55);
+}
+.c-band.quiet {
+  border: 1px dashed var(--cj-line-2); background: var(--cj-deep);
+  color: var(--cj-fg-faint); cursor: default;
+}
+.c-band.quiet .c-band-label { color: var(--cj-fg-faint); }
+
+/* ── §4.7 board lanes: deep wells + a 2px state rule across the top ───────── */
+.c-lane { position: relative; background: var(--cj-deep); border-color: var(--cj-line); }
+.c-lane::before {
+  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  border-radius: var(--cj-radius-md) var(--cj-radius-md) 0 0; pointer-events: none;
+}
+.c-lane-header { background: var(--cj-deep); color: var(--cj-fg-dim); border-bottom-color: var(--cj-line); }
+.c-lane-header .c-count { color: var(--cj-fg-faint); }
+/* §7.5 arc accent: the live lane's emission decays to the right, it never stops hard. */
+.lane-ongoing::before { background: linear-gradient(90deg, rgba(79,216,255,.55), transparent 85%); }
+.lane-blocked::before { background: var(--cj-amber); }
+.lane-waiting_on_you::before { border-top: 2px dashed rgba(255,180,84,.4); background: none; height: 0; }
+.lane-inbox::before { background: var(--cj-line-hot); }
+.lane-paused::before { border-top: 2px dashed var(--cj-line-hot); background: none; height: 0; }
+/* done / shipped / scrapped: quiet by design (P9) — no rule at all. */
+.c-lane.drop-target { border-color: var(--cj-cyan); box-shadow: inset 0 0 0 1px rgba(79,216,255,.25); }
+.c-lane-empty { color: var(--cj-fg-faint); }
+.c-lane-empty-action { color: var(--cj-fg-dim); }
+.c-lane-empty-hint { color: var(--cj-fg-faint); }
+/* §4.7: the empty-lane action line is the existing (informational) copy styled as a link;
+   the real buttons in the board empty state read as link-buttons — cyan text, underline on
+   hover — so the header scan stays the only filled primary (§3). */
+.c-lane-empty-action { color: var(--cj-cyan); font-weight: 600; }
+.c-empty-actions .c-btn { background: transparent; border-color: var(--cj-line); }
+.c-empty-actions .c-btn.primary {
+  background: transparent; color: var(--cj-cyan);
+  border-color: var(--cj-cyan); font-weight: 600; box-shadow: none;
+}
+.c-empty-actions .c-btn.primary:hover { text-decoration: underline; }
+
+/* ── §4.8 card: anatomy unchanged; hue only where a server state earns it ──── */
+.c-card { background: var(--cj-panel); border-color: var(--cj-line-2); }
+.c-card-name { color: var(--cj-fg); font-size: 13.5px; }
+.c-card-name:hover { color: var(--cj-cyan); }
+/* Urgent is a 2px rose LEFT arc, not a wall of red outline (P3). */
+.c-card-urgent { border-color: var(--cj-line-2); box-shadow: inset 2px 0 0 0 var(--cj-rose); }
+.c-card.pending { opacity: .6; }
+.c-block { border-top-color: var(--cj-line); }
+.c-block-label { color: var(--cj-fg-dim); }
+.c-summary, .c-leftoff { color: var(--cj-fg); }
+.c-condition-label { color: var(--cj-fg-dim); }
+.c-condition-value { color: var(--cj-fg-2); font-weight: 700; }
+.c-condition-age { color: var(--cj-fg-faint); }
+.c-meta { color: var(--cj-fg-dim); }
+.c-primary-session { color: var(--cj-fg-faint); }
+.c-more, .c-pane-omitted, .c-pane-window, .c-tb-hint { color: var(--cj-fg-faint); }
+.c-link { color: var(--cj-cyan); }
+.c-session code { color: var(--cj-fg-faint); }
+
+/* §4.8.1 attention marker: uppercase WORD first (server field), then a 4px hue dot.
+   P4 — meaning survives deleting colour: the word and the dot geometry stay. */
+.c-attention-marker {
+  position: relative; padding-left: 10px; background: transparent;
+  color: var(--cj-fg-dim); font-size: 10px; font-weight: 700;
+  letter-spacing: .04em; text-transform: uppercase; border-radius: 0;
+}
+.c-attention-marker::before {
+  content: ""; position: absolute; left: 0; top: 50%; margin-top: -2px;
+  width: 4px; height: 4px; border-radius: 50%; background: var(--cj-fg-dim);
+}
+.attention-blocked, .attention-needs_review, .attention-stale_with_commitment,
+.attention-urgent, .attention-waiting_on_user { color: var(--cj-fg-dim); background: transparent; }
+.attention-blocked::before, .attention-needs_review::before,
+.attention-stale_with_commitment::before, .attention-waiting_on_user::before { background: var(--cj-amber); }
+.attention-urgent::before { background: var(--cj-rose); }
+.attention-recent::before, .attention-quiet::before, .attention-no_user_work::before,
+.attention-unknown::before { background: var(--cj-fg-faint); }
+
+/* ── chips (§5 state table): outline pills, word always present ────────────── */
+.c-chip { background: transparent; border: 1px solid var(--cj-line-2); color: var(--cj-fg-dim); }
+.c-chip.chip-accepted { color: var(--cj-emerald); border-color: rgba(88,224,168,.5); }
+.c-chip.chip-candidate { color: var(--cj-fg-dim); border-color: var(--cj-line); }
+.c-chip.chip-urgent { color: var(--cj-rose); border-color: rgba(255,107,138,.5); }
+.c-chip.chip-needs { color: var(--cj-amber); border-color: rgba(255,180,84,.5); }
+.c-chip.chip-stale { color: var(--cj-amber); border-color: rgba(255,180,84,.45); }
+/* §2.5: provenance is a derived accent — violet only, and it stays small. */
+.c-chip.chip-tier { color: var(--cj-violet); border-color: rgba(139,123,255,.4); }
+.c-chip.chip-excerpt { color: var(--cj-amber); border-color: rgba(255,180,84,.45); }
+.c-spacer { flex: 1; }
+.c-card > .c-row:last-of-type { opacity: .72; }
+.c-card > .c-row:last-of-type:hover, .c-card > .c-row:last-of-type:focus-within { opacity: 1; }
+
+/* ── §4.8.8 move menu: raised surface, cyan left rule on the highlighted row ── */
+.c-menu { background: var(--cj-panel-2); border-color: var(--cj-line-2); box-shadow: var(--cj-elev-1); }
+.c-menu-item { color: var(--cj-fg); font-size: 12px; border-left: 2px solid transparent; }
+.c-menu-item:hover { background: rgba(231,238,251,.04); }
+.c-menu-item.highlighted {
+  background: rgba(79,216,255,.10); color: var(--cj-fg);
+  border-left-color: var(--cj-cyan);
+}
+
+/* ── §4.9 dense grid: fixed table, inset head, whisper zebra, dense stays dense ── */
+.c-grid thead th { background: var(--cj-inset); color: var(--cj-fg-dim); border-bottom: 1px solid var(--cj-line-2); }
+.c-grid tbody td, .c-grid tbody th { border-bottom-color: var(--cj-line); }
+.c-grid tbody tr:nth-child(even) { background: rgba(231,238,251,.015); }
+.c-grid tbody tr:hover { background: var(--cj-panel-2); }
+.c-grid-project .c-card-name { font-size: 13.5px; }
+.c-grid-ref { color: var(--cj-fg-faint); }
+.c-grid-sub { color: var(--cj-fg-dim); }
+.c-grid-plain { color: var(--cj-fg); }
+.c-claim { color: var(--cj-fg); }
+.c-claim:hover { border-color: var(--cj-line-hot); }
+.c-claim-hint { color: var(--cj-fg-faint); }
+.c-claim:hover .c-claim-hint { color: var(--cj-cyan); }
+
+/* ── §4.11 evidence drawer / session pane / detail ────────────────────────── */
+.c-evidence-drawer { background: var(--cj-panel-2); border-color: var(--cj-line-2); }
+.c-ev-basis, .c-ev-kind, .c-ev-footer { color: var(--cj-fg-dim); }
+.c-ev-hash, .c-ev-time, .c-ev-identity { color: var(--cj-fg-faint); }
+.c-ev-row { border-left: 2px solid var(--cj-cyan-deep); }
+.c-ev-excerpt { color: var(--cj-fg); }
+.c-pane { background: var(--cj-inset); border-color: var(--cj-line); }
+.c-pane-block { border-top-color: var(--cj-line); }
+.c-pane-row { border-left-color: var(--cj-line-2); color: var(--cj-fg-2); }
+.c-pane-row.is-you { border-left-color: var(--cj-cyan); }
+.c-pane-row.is-clipped { border-left-style: dashed; }
+.c-pane-role { color: var(--cj-fg-dim); }
+.c-pane-role.is-you { color: var(--cj-cyan); }
+.c-pane-time { color: var(--cj-fg-faint); }
+.c-pane-text { color: var(--cj-fg); }
+.c-pane-status { color: var(--cj-fg-dim); }
+.c-detail-section { border-top: 1px solid var(--cj-line); padding-top: var(--cj-s3); }
+.c-detail h2 { color: var(--cj-fg); }
+.c-detail-section h3 { color: var(--cj-fg-dim); }
+.c-detail-row, .c-resume { color: var(--cj-fg-2); }
+.c-detail-row.evidence { color: var(--cj-fg-dim); font-family: var(--cj-font-mono); }
+
+/* ── §4.10 action log: the instrument view, on the SAME system as the board ───── */
+.c-al {
+  margin: 12px 0; padding: var(--cj-s5);
+  background: linear-gradient(180deg, rgba(79,216,255,.03), transparent 42%), var(--cj-panel);
+  border: 1px solid var(--cj-line-2); border-radius: var(--cj-radius-md);
+  box-shadow: var(--cj-elev-1), inset 0 1px 0 rgba(231,238,251,.03);
+}
+.c-al-head { margin-bottom: var(--cj-s3); padding-bottom: var(--cj-s3); border-bottom: 1px solid var(--cj-line); }
+.c-al-sub { color: var(--cj-fg-faint); font-size: 11.5px; }
+/* counts bar: a readout, not an alarm — no hue except the cyan `active` figure */
+.c-al-bar {
+  background: var(--cj-inset); border: 1px solid var(--cj-line);
+  border-radius: var(--cj-radius-sm); padding: 7px 4px; gap: 0;
+}
+.c-al-stat { color: var(--cj-fg-dim); padding: 0 var(--cj-s4); }
+.c-al-stat + .c-al-stat { border-left: 1px solid var(--cj-line); }
+.cj-stat-active { color: var(--cj-cyan); font-weight: 700; }
+/* filter bar: stacked L3 label over an instrument well */
+.c-al-filters { gap: var(--cj-s4); padding: 10px 0; border-bottom: 1px solid var(--cj-line); }
+.c-al-field { flex-direction: column; align-items: stretch; gap: 3px; }
+.c-al-num { width: 130px; text-align: right; font-family: var(--cj-font-mono); font-variant-numeric: tabular-nums; }
+.c-al-table { font-size: 12px; }
+.c-al-table thead th {
+  position: sticky; top: 0; z-index: 1; background: var(--cj-inset);
+  border-bottom: 1px solid var(--cj-line-2);
+  color: var(--cj-fg-dim); font-size: var(--cj-t-label); font-weight: 700;
+  letter-spacing: .08em; text-transform: uppercase; padding: 7px 8px;
+}
+.c-al-table td { padding: 8px; border-bottom: 1px solid var(--cj-line); }
+.c-al-table tbody tr:hover td { background: var(--cj-panel-2); }
+/* §6: timestamps, ids, targets, evidence, flags, statuses, counts — tabular mono */
+.c-al-time, .c-al-target, .c-al-evidence, .c-al-operator, .c-al-status, .c-al-meta {
+  font-family: var(--cj-font-mono); font-variant-numeric: tabular-nums;
+}
+.c-al-time { color: var(--cj-fg-faint); white-space: nowrap; }
+.c-al-target { color: var(--cj-fg-2); }
+.c-al-operator, .c-al-status { color: var(--cj-fg-dim); }
+.c-al-meta { color: var(--cj-fg-faint); font-size: 10.5px; }
+/* status semantics: `active` carries the cyan left rule; `archived` carries NO hue at all
+   and the archive treatment (dashed dim rule + fg-faint text) is the product-wide closed
+   treatment (§5 `closed / archived`), applied identically to the quiet board lanes. */
+.c-al-row { border-left: 2px solid rgba(79,216,255,.55); }
+.c-al-row.archived {
+  border-left: 2px dashed rgba(132,150,174,.7);
+  opacity: 1;                                  /* A10: archived stays fully legible */
+}
+.c-al-row.archived td { color: var(--cj-fg-faint); background: transparent; }
+/* kind uses the SAME chip vocabulary as the board pills (§4.10) */
+.c-al-chip {
+  background: transparent; border: 1px solid var(--cj-line-2);
+  color: var(--cj-fg-dim); border-radius: var(--cj-radius-full);
+  padding: 1px 8px; font-size: 11px; font-family: var(--cj-font-mono);
+}
+/* evidence leaves the page: cyan underline-on-hover text plus a `↗` glyph (non-colour cue) */
+.c-al-evidence { color: var(--cj-cyan); font-size: 11.5px; }
+a.c-al-evidence { text-decoration: none; }
+a.c-al-evidence:hover { text-decoration: underline; }
+a.c-al-evidence::after { content: " ↗"; }
+.c-al-empty { padding: 16px; color: var(--cj-fg-dim); font-size: 12.5px; }
+.c-al-pager { gap: var(--cj-s4); color: var(--cj-fg-dim); font-family: var(--cj-font-mono); font-variant-numeric: tabular-nums; }
+.cj-more-true { color: var(--cj-fg-dim); }
+.cj-more-false { color: var(--cj-emerald); }
+
+/* ── §3: the header scan control is the ONLY filled primary on the page;
+      active toolbar toggles read as instrument state, not competing buttons ── */
+.c-toolbar .c-btn.primary {
+  background: transparent; color: var(--cj-cyan);
+  border-color: var(--cj-cyan); font-weight: 700;
+  box-shadow: inset 0 -2px 0 0 var(--cj-cyan);
+}
+.c-tb-label, .c-pg-label { color: var(--cj-fg-dim); }
+.c-pg-omitted { color: var(--cj-fg-faint); }
+.c-filter-summary {
+  background: var(--cj-deep); border-color: var(--cj-line);
+  color: var(--cj-fg-dim); font-family: var(--cj-font-mono); font-variant-numeric: tabular-nums;
+}
+.c-filter-pending { color: var(--cj-fg-dim); }
+.c-inbox-triage, .c-inbox-suppressed { color: var(--cj-fg-dim); }
+.c-inbox-zero { color: var(--cj-fg-2); }
+.c-inbox-rank { color: var(--cj-fg-faint); }
+.c-receipt {
+  background: var(--cj-deep); border: none; border-left: 2px solid rgba(79,216,255,.55);
+  color: var(--cj-fg-dim); font-variant-numeric: tabular-nums;
+}
+.c-receipt strong { color: var(--cj-fg); }
+.c-receipt span { border-left-color: var(--cj-line); }
+.c-receipt .c-fact-inference { color: var(--cj-fg-faint); }
+.c-empty, .c-error { background: var(--cj-panel); }
+.c-error { border-color: var(--cj-line-2); box-shadow: inset 0 2px 0 0 var(--cj-rose); }
+.c-error h2 { color: var(--cj-rose); }
+.c-toast {
+  background: var(--cj-panel-2); border: 1px solid var(--cj-line-2);
+  border-left: 2px solid var(--cj-cyan-deep); box-shadow: var(--cj-elev-1);
+}
+.c-toast .c-btn { background: var(--cj-inset); }
+
+/* ── §8 motion: the pulse is the page's only loop besides the load shimmer.
+      State-change crossfade and menu/drawer entrances are deliberately NOT
+      implemented: app.js remounts surfaces on every render, so any arrival
+      animation would replay on the 15s poll — exactly what §8 forbids. ─────── */
+@media (prefers-reduced-motion: reduce) {
+  /* the global kill-list above matches elements only; pseudo-element loops
+     are replaced here with a static ring so `live` still reads at rest (§5.1/A6). */
+  .cj-live, .c-mc-scan.is-running::before {
+    animation: none !important;
+    box-shadow: 0 0 0 2px rgba(79,216,255,.45) !important;
+    background: var(--cj-cyan);
+  }
+  .c-logo::before, .c-logo::after { transition: none !important; }
+  .c-skeleton { animation: none !important; background: var(--cj-panel-2) !important; }
+  .cj-deco { display: none !important; }
+}
+
+/* ── §9 responsive: 2164 / 1100 / 900 are load-bearing and kept; 640 added ──── */
+@media (max-width: 900px) {
+  /* touch surfaces have no hover — keep the action row legible (§9) */
+  .c-card > .c-row:last-of-type { opacity: 1; }
+}
+@media (max-width: 640px) {
+  body { padding: 12px 12px 40px; }
+  /* §10.3: touch targets ≥40px (the tiny rule is restated at equal specificity so the
+     later media block wins over the desktop `.c-btn.tiny` size) */
+  .c-btn, .c-btn.tiny, .c-select, .c-input, .c-rail-item, .c-lane-empty-action { min-height: 40px; }
+  .c-rail-item { padding-top: 8px; padding-bottom: 8px; }
+  /* grid reflow: label becomes the row's left column at 96px (unchanged structure) */
+  .c-grid tbody td::before { display: inline-block; width: 96px; vertical-align: top; }
+  /* MC-L16 390px defect: the action-log table takes the SAME labelled-row pattern (§9) */
+  .c-al { padding: var(--cj-s3); }
+  .c-al-table-wrap { overflow-x: hidden; }
+  .c-al-table, .c-al-table thead, .c-al-table tbody, .c-al-table tr, .c-al-table td {
+    display: block; width: auto;
+  }
+  .c-al-table thead { position: absolute; left: -9999px; }
+  .c-al-table tbody tr {
+    border: 1px solid var(--cj-line-2); border-left-width: 2px;
+    border-radius: var(--cj-radius-sm); margin-bottom: 10px; background: var(--cj-panel);
+  }
+  .c-al-table td { border-bottom: 1px solid var(--cj-line); padding: 7px 10px; }
+  .c-al-table td:last-child { border-bottom: none; }
+  .c-al-table td::before {
+    content: attr(data-label); display: block; color: var(--cj-fg-dim); font-size: 10px;
+    font-weight: 700; letter-spacing: .07em; text-transform: uppercase; margin-bottom: 2px;
+  }
+  /* toolbar wraps to scroll-free rows with Clear promoted to the end (§9/§640) */
+  .c-toolbar > *:last-child { order: 1; }
+  .c-al-target, .c-al-evidence { max-width: 100%; word-break: break-all; }
+}
+
