@@ -12,9 +12,15 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent.parent  # repo root
 
 # Files that must be free of personal paths / live registry content
+# Expanded in fix-loop-2 to cover the Finding 1 scope: all fixtures + proof
+# artifacts that were flagged (make_fixture, task-home, test-before/after).
 SENSITIVE_FILES = [
     ROOT / "server" / "fixtures" / "review-queue.json",
     ROOT / "proof" / "proof-review-queue.json",
+    ROOT / "server" / "fixtures" / "make_fixture.py",
+    ROOT / "server" / "fixtures" / "task_home" / "task-home.md",
+    ROOT / "proof" / "test-before.txt",
+    ROOT / "proof" / "test-after.txt",
 ]
 
 # Minimum patterns required by Finding 1

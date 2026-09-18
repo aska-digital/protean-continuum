@@ -21,7 +21,7 @@ _DEFAULTS: Dict[str, Any] = {
     "include_default_db": False,
     "registry_path": "data/registry.db",
     "safety_lag_seconds": 5,
-    "generic_paths": ["/Users/kethuda", "/Users/kethuda/", ".", "./", "/", "/tmp", "/Users"],
+    "generic_paths": ["/Users/kethuda", "/Users/kethuda/", "/synthetic/home", "/synthetic/home/", ".", "./", "/", "/tmp", "/Users"],
     "workspace_patterns": [r"^(?P<repo>.*?/(?:wrk|working|work)/[^/]+)"],
     "workspace_git_walkup": True,
     "workspace_walkup_max_depth": 8,

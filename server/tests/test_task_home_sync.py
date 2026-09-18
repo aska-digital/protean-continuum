@@ -28,7 +28,7 @@ from continuum.service import Service                     # noqa: E402
 from fixtures.make_fixture import build_fixture_tree      # noqa: E402
 
 FROZEN = os.path.join(BUILD_ROOT, "fixtures", "task_home", "task-home.md")
-FROZEN_SHA = "87e6957b103e24a5b754e8e1a322926ce370c43c5095d9007b1419a0bc863f3f"
+FROZEN_SHA = "714cb9bdbe07d5725bb97ceaf886fe52a6410e55fee6482a5dbfccdb4c26bf6f"
 LIVE_SOURCE = "/Users/kethuda/.hermes/profiles/orda/TASK-HOME.md"
 
 #: §1's measured table, reproduced verbatim from the architecture artifact.

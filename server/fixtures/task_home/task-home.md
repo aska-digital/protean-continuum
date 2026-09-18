@@ -32,7 +32,7 @@ The `overview-report` skill reads this file on "overview".
 ## OPEN FOLLOW-UPS (tracked, no lane yet)
 - Askasite out-of-slice: Desert Ant automatic-chain defect (--emit-items omits redacted); version drift (Team6 v1.2.0 vs kit v1.6.0); README six-vs-seven ingredient count (positioning lane may have caught).
 - Raptora mission control: milestone integrated, demo evidence in lane — serve the demo link on request.
-- SYM-2 report PDF delivered (/Users/kethuda/Documents/Proteus/protean-feed/sym2-protean-integration-report.pdf) with Phase-3 HOLD flag.
+- SYM-2 report PDF delivered (/synthetic/docs/protean-feed/sym2-protean-integration-report.pdf) with Phase-3 HOLD flag.
 - Bots on orda profile stable since 02:49; stale lugia route fixed.
 - TypeMon Pages: one stability re-probe post-publish.
 - Pet died overnight once (cause undetermined, relaunched healthy) — watch for recurrence.

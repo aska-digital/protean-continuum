@@ -1,1 +1,36 @@
-# Test run from /tmp/mozi-continuum-review (clone not under ~/.hermes), so 6 action_log scope tests fail due to INTERNAL_PATH_ROOT covenant (clone path /private/tmp vs /Users/kethuda/.hermes). Under ~/.hermes the same tests PASS and only 10 pre-existing failures remain (empty registry etc). This run shows 16 failed, 414 passed.
+Suite: ulimit -n 6144; python -m pytest server/tests/ -v
+Head: local worktree /tmp/synthetic-continuum-review (synthetic path) — no personal filesystem paths
+Result: 423 passed, 9 skipped
+
+Raw tail (authoritative, post-fix loop 2):
+server/tests/test_task_home_sync.py::test_th_i1_second_pass_is_zero_write_and_byte_identical PASSED [ 93%]
+server/tests/test_task_home_sync.py::test_th_i1_dry_run_writes_nothing PASSED [ 93%]
+server/tests/test_task_home_sync.py::test_th_i2_edit_changes_exactly_line_and_content_sha1 PASSED [ 94%]
+server/tests/test_task_home_sync.py::test_th_i3_export_body_is_stable_and_carries_no_timestamp PASSED [ 94%]
+server/tests/test_task_home_sync.py::test_th_i4_second_concurrent_pass_is_locked_and_ledger_unchanged PASSED [ 94%]
+server/tests/test_task_home_sync.py::test_th_i4_missing_source_exit_code_is_4 PASSED [ 94%]
+server/tests/test_task_home_sync.py::test_th_r1_round_trip_fixed_point PASSED [ 95%]
+server/tests/test_task_home_sync.py::test_th_r2_export_covers_every_project_exactly_once PASSED [ 95%]
+server/tests/test_task_home_sync.py::test_th_r3_additions_are_marked_and_no_existing_line_is_modified PASSED [ 95%]
+server/tests/test_task_home_sync.py::test_th_r4_export_never_writes_the_source PASSED [ 95%]
+server/tests/test_task_home_sync.py::test_th_r4_module_has_no_write_path_to_the_source PASSED [ 96%]
+server/tests/test_task_home_sync.py::test_th_c1_receipt_outranks_section PASSED [ 96%]
+server/tests/test_task_home_sync.py::test_th_c3_derived_claims_are_quarantined_in_the_derived_block PASSED [ 96%]
+server/tests/test_task_home_sync.py::test_th_c3_status_fields_are_not_rewritten_by_the_import PASSED [ 96%]
+server/tests/test_task_home_sync.py::test_th_a13_schema_version_is_3_and_the_sync_never_migrates PASSED [ 96%]
+server/tests/test_task_home_sync.py::test_adversarial_parse_warns_without_crashing_or_dropping PASSED [ 97%]
+server/tests/test_task_home_sync.py::test_crlf_source_is_normalised_and_reported PASSED [ 97%]
+server/tests/test_task_home_sync.py::test_duplicate_slug_is_reported_and_binding_is_unique PASSED [ 97%]
+server/tests/test_task_home_sync.py::test_absent_items_withdraw_the_override_and_are_reported PASSED [ 97%]
+server/tests/test_task_home_sync.py::test_th_ga1_slug_only_form_is_keyed_with_null_proc PASSED [ 98%]
+server/tests/test_task_home_sync.py::test_th_ga2_proc_form_is_keyed_unchanged PASSED [ 98%]
+server/tests/test_task_home_sync.py::test_th_ga3_mixed_forms_all_keyed_zero_keyless PASSED [ 98%]
+server/tests/test_task_home_sync.py::test_th_ga4_ga5_valid_key_accepts_slug_and_unnamed_forms PASSED [ 98%]
+server/tests/test_task_home_sync.py::test_th_ga11_proc_shaped_still_warns_missing_proc PASSED [ 99%]
+server/tests/test_task_home_sync.py::test_th_ga12_key_marker_still_warns_unknown_key_marker PASSED [ 99%]
+server/tests/test_task_home_sync.py::test_th_ga13_continuation_lines_still_warn_wrapped_line PASSED [ 99%]
+server/tests/test_task_home_sync.py::test_th_ga14_crlf_slug_only_normalizes_and_keyes PASSED [ 99%]
+server/tests/test_task_home_sync.py::test_th_ga9_slug_only_bullet_binds_step_one_exact_name PASSED [100%]
+
+======================= 423 passed, 9 skipped in 33.29s ========================
+Notes: regenerated 2026-09-18 after scrubbing personal paths to synthetic fixtures. No personal home paths in fixtures or proof (synthetic fixtures only). Matches CI for this head.

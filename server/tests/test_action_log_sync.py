@@ -348,8 +348,44 @@ REGISTRY_TABLES = ("project", "project_session", "evidence", "next_action", "rev
 def test_al_a12_write_boundary(tmp_path):
     registry = os.path.join(BUILD_ROOT, "data", "registry.db")
     task_home = os.path.join(BUILD_ROOT, "data", "task_home_sync.json")
+    # Hermetic: if no live registry is present (CI and fresh checkouts), build a
+    # synthetic registry in tmp_path so the write-boundary assertion stays live
+    # instead of being hidden behind a skip.
     if not os.path.exists(registry):
-        pytest.skip("no live registry at {} — write-boundary test requires live data".format(registry))
+        synthetic = str(tmp_path / "synthetic-registry.db")
+        import continuum.registry as _reg
+        conn = sqlite3.connect(synthetic)
+        try:
+            conn.executescript(_reg._DDL)
+            conn.execute("INSERT INTO schema_version (version) VALUES (?)", (_reg.SCHEMA_VERSION,))
+            # one minimal row per table so hashing exercises real content
+            now = 1000.0
+            conn.execute(
+                "INSERT INTO project (project_id, name, kind, phase, lifecycle, confidence, confidence_band, evidence_tier, owner_profile, drive_expected, stall_age_days, last_substantive_activity, session_count, derived_updated_at, created_at, updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                ("syn-proj-1", "synthetic project", "derived", "active", "LS-2", 0.8, "high", 1, "", 0, 1.0, now, 1, now, now, now))
+            conn.execute(
+                "INSERT INTO project_session (link_id, project_id, profile_name, session_id, role_in_project, link_confidence, link_reason, evidence_ref, accepted, first_linked_at) VALUES (?,?,?,?,?,?,?,?,?,?)",
+                ("link-syn-proj-1", "syn-proj-1", "syn", "20260101_000001_syn001", "supporting", 0.8, "synthetic", None, 0, now))
+            conn.execute(
+                "INSERT INTO evidence (evidence_id, project_id, cluster_id, profile_name, session_id, tier, kind, excerpt, locator, extracted_at, source_hash) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+                ("ev-syn-1", "syn-proj-1", "cl-syn", "syn", "20260101_000001_syn001", 1, "session", "excerpt", '{"profile":"syn"}', now, "abc"))
+            conn.execute(
+                "INSERT INTO next_action (action_id, project_id, text, state, source, verified_at, expires_at, declared_rev) VALUES (?,?,?,?,?,?,?,?)",
+                ("na-syn-1", "syn-proj-1", "do thing", "open", "derived", now, None, 0))
+            conn.execute(
+                "INSERT INTO review_event (event_id, ts, actor, action, target_type, target_id, before_json, after_json, rev) VALUES (?,?,?,?,?,?,?,?,?)",
+                ("ev-1", now, "test", "create", "project", "syn-proj-1", "{}", "{}", 1))
+            conn.execute(
+                "INSERT INTO scan_run (run_id, started_at, ended_at, mode, profiles_scanned, sessions_read, messages_probed, status, error) VALUES (?,?,?,?,?,?,?,?,?)",
+                ("run-syn-1", now, now, "incremental", 1, 1, 1, "ok", None))
+            conn.commit()
+        finally:
+            conn.close()
+        registry = synthetic
+        # synthetic task-home lives beside the synthetic registry; action-log must not touch it
+        task_home = str(tmp_path / "synthetic-task-home.json")
+        with open(task_home, "w", encoding="utf-8") as fh:
+            fh.write('{"synthetic": true}')
 
     def table_hashes():
         conn = sqlite3.connect("file:{}?mode=ro".format(registry), uri=True)

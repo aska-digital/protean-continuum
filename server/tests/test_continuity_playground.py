@@ -749,7 +749,7 @@ def test_cp_t9_changed_profile_reconciles_against_skipped_profile_facts(home):
         "started_at, last_activity_at, message_count, tool_call_count) "
         "VALUES (?,?,?,?,?,?,?,?,?,?)",
         ("20260999_000099_newaaa", "cli", "tjgc1 continued", "derived",
-         "/Users/kethuda/work/tjgc1", "/Users/kethuda/work/tjgc1",
+         "/synthetic/work/tjgc1", "/synthetic/work/tjgc1",
          time.time(), time.time(), 3, 1))
     conn.execute(
         "INSERT INTO messages (session_id, role, content, timestamp) VALUES (?,?,?,?)",

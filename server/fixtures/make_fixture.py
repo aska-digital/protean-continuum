@@ -7,7 +7,7 @@ depends on the live profile databases.
 Encodes the acceptance vectors as data:
   AV-2 cron sessions exist and must be bucketed as noise, never board entries
   AV-3 three sessions share git_repo_root .../typejoy/wrk/tjgc1 -> one HIGH cluster
-  AV-4 sessions share only the generic cwd /Users/kethuda (and '.') -> NEVER merged
+  AV-4 sessions share only the generic cwd /synthetic/home (and '.') -> NEVER merged
   AV-5 one cluster is stale-only -> must emit zero alerts
   AV-6 title_source user / derived / blank -> DECLARED / DERIVED / UNTITLED
   AV-7 a child session folds into its parent, never standalone
@@ -39,9 +39,9 @@ CREATE TABLE messages (
 CREATE TABLE schema_version (version INTEGER NOT NULL);
 """
 
-TJGC1 = "/Users/kethuda/work/tjgc1"
-WS = "/Users/kethuda/work/tywebsite"
-GENERIC = "/Users/kethuda"
+TJGC1 = "/synthetic/work/tjgc1"
+WS = "/synthetic/work/tywebsite"
+GENERIC = "/synthetic/home"
 
 
 def _session(conn, sid, *, source="cli", title=None, title_source=None, cwd=None,
@@ -141,13 +141,13 @@ def _build_alpha(conn, now: float):
 
     # --- AV-6a: DECLARED user title must survive verbatim ------------------
     _session(conn, "20260116_000016_hhh111", title="My Own Project Name",
-             title_source="user", cwd="/Users/kethuda/work/onlyone",
+             title_source="user", cwd="/synthetic/work/onlyone",
              started=now - 10 * DAY, last=now - 9 * DAY)
     _messages(conn, "20260116_000016_hhh111", [("user", "note", now - 9 * DAY)])
 
     # --- AV-6c: llm title -> DERIVED ---------------------------------------
     _session(conn, "20260117_000017_iii111", title="llm generated title",
-             title_source="llm", cwd="/Users/kethuda/work/onlytwo",
+             title_source="llm", cwd="/synthetic/work/onlytwo",
              started=now - 10 * DAY, last=now - 9 * DAY)
     _messages(conn, "20260117_000017_iii111", [("user", "note", now - 9 * DAY)])
 
@@ -169,4 +169,4 @@ def _build_beta(conn, now: float):
              title_source="user", cwd=TJGC1, git=TJGC1,
              started=now - 2 * DAY, last=now - 1 * DAY)
     _messages(conn, "20260201_000001_bbb901",
-              [("user", "review /Users/kethuda/work/tjgc1", now - 1 * DAY)])
+              [("user", "review /synthetic/work/tjgc1", now - 1 * DAY)])
