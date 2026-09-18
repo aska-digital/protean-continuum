@@ -17,7 +17,7 @@ jobs:
           python -m pip install --upgrade pip
           if [ -f server/requirements.txt ]; then pip install -r server/requirements.txt; fi
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-          pip install pytest anyio fastapi starlette uvicorn pydantic httpx 2>&1 | tail -5
+          pip install pytest anyio "fastapi==0.128.8" "starlette==0.49.3" uvicorn pydantic httpx pyyaml 2>&1 | tail -5
       - name: Run test suite
         run: |
           ulimit -n 6144
