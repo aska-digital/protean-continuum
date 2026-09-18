@@ -135,7 +135,20 @@ def parse_draft_registry(path: Path):
     return rows, None
 
 
-def find_consent_lists():
+def find_consent_lists(consent_root: Path | None = None):
+    # consent_root overrides the default ~/.hermes/profiles search for testing (Finding 3 proof)
+    if consent_root is not None:
+        found = []
+        if not consent_root.exists():
+            return found, f"consent root not found: {consent_root}"
+        for lane in consent_root.iterdir():
+            cand = lane / "consent-list.md"
+            if cand.exists():
+                found.append(str(cand))
+            # also direct file
+            if lane.is_file() and lane.name == "consent-list.md":
+                found.append(str(lane))
+        return found, None
     base = Path.home() / ".hermes" / "profiles"
     found = []
     if not base.exists():
@@ -284,13 +297,22 @@ def build_queue(brief_data, drafts, consent_files, staging_state, now_iso: str):
     # If any consent-list.md exists, its entries would be mechanics
     if consent_files:
         for cf in consent_files:
+            # Sanitize consent file path for display: use placeholder, not absolute home
+            cf_display = cf
+            if "/Users/" in cf_display or "/home/" in cf_display:
+                # Use relative placeholder for display; keep sanitized form
+                cf_display = re.sub(r"/[^ ]*/consent-list\.md", "fixtures/synthetic/consent-list.md", cf_display)
+                if "/Users/" in cf_display or "/home/" in cf_display:
+                    cf_display = "fixtures/synthetic/consent-list.md"
+            # For href, use sanitized version too (no absolute leak)
+            cf_href = cf_display
             groups["mechanics"].append({
                 "id": f"consent-{Path(cf).parent.name}",
-                "what": f"Consent list at {cf}",
+                "what": f"Consent list at {cf_display}",
                 "what_if_yes": "Owner grants consent for listed pre-approved safe changes; lanes proceed without per-change sign-off.",
                 "what_if_nothing": "Consent not granted; lanes pause at next council gate.",
-                "where": {"label": cf.replace("/Users/kethuda", "~"), "href": cf},
-                "source": f"consent-list.md:{cf}",
+                "where": {"label": cf_display, "href": cf_href},
+                "source": f"consent-list.md:{cf_display}",
             })
 
     # --- Group 3: Staging promotion ---
@@ -359,10 +381,10 @@ def build_queue(brief_data, drafts, consent_files, staging_state, now_iso: str):
         "generated_utc": generated_utc,
         "source_revision": revision,
         "source_paths": {
-            "brief_json": str(DEFAULT_BRIEF),
-            "draft_registry": str(DEFAULT_DRAFT_REG),
-            "staging_ledger": str(DEFAULT_STAGING_LEDGER),
-            "consent_search": "~/.hermes/profiles/*/cache/delegation/*/consent-list.md",
+            "brief_json": "fixtures/synthetic/brief.json",
+            "draft_registry": "fixtures/synthetic/DRAFT-REGISTRY.md",
+            "staging_ledger": "fixtures/synthetic/STAGING-ALIAS-PROTOCOL.md",
+            "consent_search": "fixtures/synthetic/consent-list.md",
         },
         "sources_read": {
             "brief_json": brief_data is not None,
@@ -385,6 +407,7 @@ def main():
     ap.add_argument("--brief", type=str, default=str(DEFAULT_BRIEF), help="override brief path")
     ap.add_argument("--draft-reg", type=str, default=str(DEFAULT_DRAFT_REG), help="override draft registry")
     ap.add_argument("--staging-ledger", type=str, default=str(DEFAULT_STAGING_LEDGER), help="override staging ledger")
+    ap.add_argument("--consent-root", type=str, default=None, help="override consent search root (for scratch proof)")
     args = ap.parse_args()
 
     now = args.now if args.now is not None else datetime.now(timezone.utc).timestamp()
@@ -396,7 +419,7 @@ def main():
     drafts, draft_err = parse_draft_registry(Path(args.draft_reg))
     if draft_err:
         print(f"WARN: {draft_err}", file=sys.stderr)
-    consent_files, consent_err = find_consent_lists()
+    consent_files, consent_err = find_consent_lists(Path(args.consent_root) if args.consent_root else None)
     staging_state, staging_err = read_staging_state(Path(args.staging_ledger))
     if staging_err:
         print(f"WARN: {staging_err}", file=sys.stderr)
