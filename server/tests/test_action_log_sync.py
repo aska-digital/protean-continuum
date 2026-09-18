@@ -348,6 +348,8 @@ REGISTRY_TABLES = ("project", "project_session", "evidence", "next_action", "rev
 def test_al_a12_write_boundary(tmp_path):
     registry = os.path.join(BUILD_ROOT, "data", "registry.db")
     task_home = os.path.join(BUILD_ROOT, "data", "task_home_sync.json")
+    if not os.path.exists(registry):
+        pytest.skip("no live registry at {} — write-boundary test requires live data".format(registry))
 
     def table_hashes():
         conn = sqlite3.connect("file:{}?mode=ro".format(registry), uri=True)

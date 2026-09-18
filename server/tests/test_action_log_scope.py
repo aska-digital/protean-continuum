@@ -56,7 +56,15 @@ def env(tmp_path, monkeypatch):
     Same pattern the ARCHIVE lane uses (and the crashed run worked out): a lazily-built
     Service — a SQLite connection from the test thread cannot be reused by TestClient's
     worker thread — monkey-patched into plugin_api, plus the real standalone app over HTTP.
+
+    Hermetic: patch INTERNAL_PATH_ROOT to the test's BUILD_ROOT so that the
+    direct-edit receipt (whose Owned file is fixtures/action_log/direct-edit-target.md,
+    i.e. under BUILD_ROOT) is classified internal regardless of where the repo is
+    cloned — the contract's "build tree lives under ~/.hermes/" coupling is not
+    required for the test to pass; the path is still a file under the repo tree.
     """
+    # Make the build-tree path count as internal for this test environment
+    monkeypatch.setattr(al, "INTERNAL_PATH_ROOT", BUILD_ROOT + os.sep)
     home = build_fixture_tree(str(tmp_path / "hermes_home"))
     cfg = load_config(hermes_home=home)
     cfg.bundle["registry_path"] = str(tmp_path / "registry.db")

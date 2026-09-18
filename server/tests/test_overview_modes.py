@@ -15,6 +15,7 @@ import json
 import os
 import shutil
 import socket
+import sqlite3
 
 import pytest
 
@@ -84,7 +85,24 @@ def fresh_svc(tmp_path):
 
 @pytest.fixture()
 def live_svc(tmp_path):
-    """Live corpus via a byte copy; the live file is never the query target."""
+    """Live corpus via a byte copy; the live file is never the query target.
+
+    Hermetic: when the live registry is absent (CI) or empty (no live data),
+    the dependent tests are skipped with a clear reason rather than erroring.
+    """
+    if not os.path.exists(LIVE_DB):
+        pytest.skip("no live registry at {} — live-corpus tests require a local scan".format(LIVE_DB))
+    # Check if DB has any projects; empty DB means no live data to test against
+    try:
+        _check = sqlite3.connect("file:{}?mode=ro".format(LIVE_DB), uri=True)
+        try:
+            n = _check.execute("SELECT COUNT(*) FROM project").fetchone()[0]
+        finally:
+            _check.close()
+        if n == 0:
+            pytest.skip("live registry is empty (0 projects) — live-corpus tests require populated data")
+    except sqlite3.OperationalError as exc:
+        pytest.skip("live registry not readable ({}): {}".format(LIVE_DB, exc))
     copy = os.path.join(str(tmp_path), "registry-copy.db")
     shutil.copyfile(LIVE_DB, copy)
     for ext in ("-wal", "-shm", "-journal"):

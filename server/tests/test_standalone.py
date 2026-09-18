@@ -220,7 +220,9 @@ def test_appjs_scan_is_bound_to_the_scan_button_only():
 # ── 6. source DB read-only + registry path preservation ────────────────
 def test_registry_path_is_preserved():
     cfg = load_config(os.path.expanduser("~/.hermes"))
-    assert cfg.registry_path_resolved().endswith(os.path.join("build", "data", "registry.db"))
+    # PLUGIN_DIR is server/ (continuum/config.py: PLUGIN_DIR = Path(__file__).parent.parent)
+    # so registry_path "data/registry.db" resolves to server/data/registry.db
+    assert cfg.registry_path_resolved().endswith(os.path.join("data", "registry.db"))
     assert cfg.registry_path_resolved() == REGISTRY_DB
 
 

@@ -41,6 +41,6 @@ The `overview-report` skill reads this file on "overview".
 - EvoPet uncap (pet 126 live) + floater 126 verified; EvoPet #25 + #26 merged; preview-snapshot spam guarded.
 - Tama #15 (glass HUD) + #16 (XP 999) merged; HUD stale-pid fixed morning.
 - Upstream 106742 fulfilled-by-maintainer + covered; 4 conflict PRs rebased mergeable.
-- Overnight: 13 PRs merged (personal/org/EvoPet/Tama); board zero everywhere at last check.
+- Overnight — 13 PRs merged (personal/org/EvoPet/Tama); board zero everywhere at last check.
 - Positioning 8/8 merged; kit About live; bounce SOP law + org teams; TypeMon published + playable.
 - VoiceStudio v0.5.3 incorporated (service still v0.5.2).
