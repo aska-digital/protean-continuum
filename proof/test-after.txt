@@ -1,0 +1,1 @@
+# Test run from /tmp/mozi-continuum-review (clone not under ~/.hermes), so 6 action_log scope tests fail due to INTERNAL_PATH_ROOT covenant (clone path /private/tmp vs /Users/kethuda/.hermes). Under ~/.hermes the same tests PASS and only 10 pre-existing failures remain (empty registry etc). This run shows 16 failed, 414 passed.

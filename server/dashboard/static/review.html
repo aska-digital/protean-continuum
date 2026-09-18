@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Continuum — owner review</title>
+  <link rel="stylesheet" href="./styles.css">
+  <style>
+    /* Review page owns its lane layout on top of the JARVIS tokens; no new palette. */
+    .c-review-head { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:16px; }
+    .c-review-title { margin:0; font-size:22px; letter-spacing:.02em; color:var(--cj-fg); }
+    .c-review-subtitle { color:var(--cj-fg-dim); font-size:13px; margin-top:4px; }
+    .c-freshness { background:var(--cj-deep); border:1px solid var(--cj-line); border-left:2px solid var(--cj-cyan); padding:10px 12px; border-radius:var(--cj-radius-md); margin:12px 0 18px; font-family:var(--cj-font-mono); font-size:12.5px; color:var(--cj-fg-dim); }
+    .c-freshness.is-stale { border-left-color:var(--cj-amber); color:var(--cj-amber-soft); }
+    .c-freshness strong { color:var(--cj-fg); }
+    .c-group { background:var(--cj-panel); border:1px solid var(--cj-line-2); border-radius:var(--cj-radius-md); margin-bottom:14px; overflow:hidden; }
+    .c-group-head { display:flex; align-items:baseline; justify-content:space-between; gap:12px; padding:12px 14px 10px; border-bottom:1px solid var(--cj-line); }
+    .c-group-title { margin:0; font-size:13px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--cj-fg); }
+    .c-group-count { font-family:var(--cj-font-mono); font-variant-numeric:tabular-nums; font-size:12px; color:var(--cj-fg-dim); }
+    .c-group-empty { padding:14px; color:var(--cj-fg-dim); font-size:13px; }
+    .c-review-row { padding:12px 14px; border-bottom:1px solid var(--cj-line); }
+    .c-review-row:last-child { border-bottom:none; }
+    .c-review-row + .c-review-row { border-top:1px solid var(--cj-line); }
+    .c-q { display:grid; grid-template-columns:140px 1fr; gap:6px 12px; font-size:13px; line-height:1.45; }
+    .c-q dt { color:var(--cj-fg-dim); font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; }
+    .c-q dd { margin:0; color:var(--cj-fg-2); word-break:break-word; }
+    .c-q dd a { color:var(--cj-cyan); text-decoration:none; word-break:break-all; }
+    .c-q dd a:hover { text-decoration:underline; }
+    .c-q dd code { font-family:var(--cj-font-mono); font-size:12px; background:var(--cj-inset); padding:1px 4px; border-radius:3px; }
+    @media (max-width:640px){ .c-q{ grid-template-columns:1fr; } .c-q dt{ margin-top:6px; } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="c-header">
+      <div class="c-brand">
+        <div class="c-logo" aria-hidden="true">C</div>
+        <div>
+          <h1>Continuum</h1>
+          <div class="c-tag">owner review — read-only decision queue &middot; local</div>
+        </div>
+      </div>
+      <div class="c-header-actions">
+        <a class="c-btn" href="./">Back to board</a>
+        <button id="refresh" class="c-btn" type="button">Refresh</button>
+      </div>
+    </header>
+
+    <div id="freshness" class="c-freshness" role="status" aria-live="polite">Loading queue…</div>
+
+    <main id="review-app" aria-live="polite">
+      <div class="c-skeleton" role="status" aria-label="Loading review queue"></div>
+      <div class="c-skeleton"></div>
+    </main>
+
+    <div id="live" class="c-visually-hidden" aria-live="polite"></div>
+  </div>
+  <script type="module" src="./review.js"></script>
+</body>
+</html>

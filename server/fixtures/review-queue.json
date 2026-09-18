@@ -1,0 +1,501 @@
+{
+  "schema_version": 1,
+  "generated_utc": "2026-09-18T17:30:30Z",
+  "source_revision": 148,
+  "source_paths": {
+    "brief_json": "/Users/kethuda/.hermes/eldunari/nexus/state/orda/projection/brief.json",
+    "draft_registry": "/Users/kethuda/.hermes/eldunari/nexus/state/orda/DRAFT-REGISTRY.md",
+    "staging_ledger": "/Users/kethuda/.hermes/eldunari/nexus/state/orda/STAGING-ALIAS-PROTOCOL.md",
+    "consent_search": "~/.hermes/profiles/*/cache/delegation/*/consent-list.md"
+  },
+  "sources_read": {
+    "brief_json": true,
+    "draft_registry": true,
+    "staging_ledger": true
+  },
+  "is_stale": false,
+  "stale_reason": null,
+  "counts": {
+    "github_drafts": 8,
+    "mechanics": 7,
+    "staging_promotion": 1,
+    "other_owner_actions": 20
+  },
+  "groups": {
+    "github_drafts": [
+      {
+        "id": "draft-1",
+        "what": "Draft #1: team6-kit setup manual-placement docs -> `ahrazzle/team6-kit` issue",
+        "what_if_yes": "Owner approves exact target + text; post via ahrazzle (one authenticated write) then live read-back.",
+        "what_if_nothing": "Stays in DRAFT-REGISTRY.md / contrib/drafts; no external post, no PR, no issue comment.",
+        "where": {
+          "label": "`proteus/cache/delegation/execute-team-council-next-steps/hazen-redline/contribution-drafts-staged.md` (draft i)",
+          "href": "`proteus/cache/delegation/execute-team-council-next-steps/hazen-redline/contribution-drafts-staged.md` (draft i)"
+        },
+        "source": "DRAFT-REGISTRY.md#1",
+        "state": "GATED — promotion gate + owner exact-post approval + freshness re-check; no local-model claims"
+      },
+      {
+        "id": "draft-2",
+        "what": "Draft #2: team6-kit Team6-string remnant note -> `ahrazzle/team6-kit` issue",
+        "what_if_yes": "Owner approves exact target + text; post via ahrazzle (one authenticated write) then live read-back.",
+        "what_if_nothing": "Stays in DRAFT-REGISTRY.md / contrib/drafts; no external post, no PR, no issue comment.",
+        "where": {
+          "label": "same file (draft ii)",
+          "href": "same file (draft ii)"
+        },
+        "source": "DRAFT-REGISTRY.md#2",
+        "state": "GATED — same four gates; depends on the rebrand-vs-deprecate ruling"
+      },
+      {
+        "id": "draft-3",
+        "what": "Draft #3: ingest B01B02 reference batches -> `100yenadmin/*` PR",
+        "what_if_yes": "Owner approves exact target + text; post via ahrazzle (one authenticated write) then live read-back.",
+        "what_if_nothing": "Stays in DRAFT-REGISTRY.md / contrib/drafts; no external post, no PR, no issue comment.",
+        "where": {
+          "label": "`proteus/cache/ingest/2026-09-15-100yenadmin/outbox/DRAFT-PR-B01B02.md`",
+          "href": "`proteus/cache/ingest/2026-09-15-100yenadmin/outbox/DRAFT-PR-B01B02.md`"
+        },
+        "source": "DRAFT-REGISTRY.md#3",
+        "state": "HELD — branch `protean/ingest-b01b02-references`; unposted"
+      },
+      {
+        "id": "draft-4",
+        "what": "Draft #4: ingest B04 lcm-context-plugin -> `100yenadmin/*` PR",
+        "what_if_yes": "Owner approves exact target + text; post via ahrazzle (one authenticated write) then live read-back.",
+        "what_if_nothing": "Stays in DRAFT-REGISTRY.md / contrib/drafts; no external post, no PR, no issue comment.",
+        "where": {
+          "label": "`.../DRAFT-PR-B04.md`",
+          "href": "`.../DRAFT-PR-B04.md`"
+        },
+        "source": "DRAFT-REGISTRY.md#4",
+        "state": "HELD — implemented, not pushed"
+      },
+      {
+        "id": "draft-5",
+        "what": "Draft #5: ingest B05 skill-catalog-router -> `ahrazzle/team6-kit` PR",
+        "what_if_yes": "Owner approves exact target + text; post via ahrazzle (one authenticated write) then live read-back.",
+        "what_if_nothing": "Stays in DRAFT-REGISTRY.md / contrib/drafts; no external post, no PR, no issue comment.",
+        "where": {
+          "label": "`.../DRAFT-PR-B05.md`",
+          "href": "`.../DRAFT-PR-B05.md`"
+        },
+        "source": "DRAFT-REGISTRY.md#5",
+        "state": "HELD — branch `protean/ingest-b05-skill-catalog` @ `14d3884`, not pushed"
+      },
+      {
+        "id": "draft-6",
+        "what": "Draft #6: ingest B06 review-repair workflows -> `ahrazzle/team6-kit` PR",
+        "what_if_yes": "Owner approves exact target + text; post via ahrazzle (one authenticated write) then live read-back.",
+        "what_if_nothing": "Stays in DRAFT-REGISTRY.md / contrib/drafts; no external post, no PR, no issue comment.",
+        "where": {
+          "label": "`.../DRAFT-PR-B06.md`",
+          "href": "`.../DRAFT-PR-B06.md`"
+        },
+        "source": "DRAFT-REGISTRY.md#6",
+        "state": "HELD — branch `protean/ingest-b06-review-workflows`"
+      },
+      {
+        "id": "draft-7",
+        "what": "Draft #7: ingest B07 sag-tts adapter -> `ahrazzle/team6-kit` PR",
+        "what_if_yes": "Owner approves exact target + text; post via ahrazzle (one authenticated write) then live read-back.",
+        "what_if_nothing": "Stays in DRAFT-REGISTRY.md / contrib/drafts; no external post, no PR, no issue comment.",
+        "where": {
+          "label": "`.../DRAFT-PR-B07.md`",
+          "href": "`.../DRAFT-PR-B07.md`"
+        },
+        "source": "DRAFT-REGISTRY.md#7",
+        "state": "HELD — branch `protean/ingest-b07-sag-tts`"
+      },
+      {
+        "id": "draft-8",
+        "what": "Draft #8: ingest B08 website status surface -> `ahrazzle/team6-kit` PR",
+        "what_if_yes": "Owner approves exact target + text; post via ahrazzle (one authenticated write) then live read-back.",
+        "what_if_nothing": "Stays in DRAFT-REGISTRY.md / contrib/drafts; no external post, no PR, no issue comment.",
+        "where": {
+          "label": "`.../DRAFT-PR-B08.md`",
+          "href": "`.../DRAFT-PR-B08.md`"
+        },
+        "source": "DRAFT-REGISTRY.md#8",
+        "state": "HELD — branch `protean/ingest-b08-website`"
+      }
+    ],
+    "mechanics": [
+      {
+        "id": "aska-staging-portfolio-navigation-corrections",
+        "what": "aska-staging-portfolio-navigation-corrections: replace legacy Team6 portfolio references with Proteus, feature Proteus first, keep pricing exclusively on `/team6/` (already present) and remove it from `/digi",
+        "what_if_yes": "Owner approves/merges or marks done; change lands on staging first per staging-first law.",
+        "what_if_nothing": "Stays awaiting-owner; no merge, no staging deploy.",
+        "where": {
+          "label": "eldunari/nexus/state/orda/projection/brief.json#aska-staging-portfolio-navigation-corrections",
+          "href": "eldunari/nexus/state/orda/projection/brief.json#aska-staging-portfolio-navigation-corrections"
+        },
+        "source": "brief.json:awaiting-owner:aska-staging-portfolio-navigation-corrections",
+        "tag": "",
+        "summary": "replace legacy Team6 portfolio references with Proteus, feature Proteus first, keep pricing exclusively on `/team6/` (already present) and remove it from `/digital/`, and implement context-aware Journal navigation/dropd…"
+      },
+      {
+        "id": "aska-team-hermes-attribution",
+        "what": "aska-team-hermes-attribution: remove Hermes profile card, reuse current Hermes portrait for Proteus, add small linked `Built on Hermes Agent` footer attribution using verified official URL, ",
+        "what_if_yes": "Owner approves/merges or marks done; change lands on staging first per staging-first law.",
+        "what_if_nothing": "Stays awaiting-owner; no merge, no staging deploy.",
+        "where": {
+          "label": "eldunari/nexus/state/orda/projection/brief.json#aska-team-hermes-attribution",
+          "href": "eldunari/nexus/state/orda/projection/brief.json#aska-team-hermes-attribution"
+        },
+        "source": "brief.json:awaiting-owner:aska-team-hermes-attribution",
+        "tag": "",
+        "summary": "remove Hermes profile card, reuse current Hermes portrait for Proteus, add small linked `Built on Hermes Agent` footer attribution using verified official URL, preserve seven-agent elegant roster and naming-story disclo…"
+      },
+      {
+        "id": "aska-team-naming-stories",
+        "what": "aska-team-naming-stories: add concise naming-origin stories to the elegant `/team/` view via accessible progressive disclosure (hover teaser plus click/focus modal/drawer/detail), preser",
+        "what_if_yes": "Owner approves/merges or marks done; change lands on staging first per staging-first law.",
+        "what_if_nothing": "Stays awaiting-owner; no merge, no staging deploy.",
+        "where": {
+          "label": "eldunari/nexus/state/orda/projection/brief.json#aska-team-naming-stories",
+          "href": "eldunari/nexus/state/orda/projection/brief.json#aska-team-naming-stories"
+        },
+        "source": "brief.json:awaiting-owner:aska-team-naming-stories",
+        "tag": "",
+        "summary": "add concise naming-origin stories to the elegant `/team/` view via accessible progressive disclosure (hover teaser plus click/focus modal/drawer/detail), preserving portraits, roles, Frontier shell, mobile/reduced-motio…"
+      },
+      {
+        "id": "execute-team-council-next-steps",
+        "what": "execute-team-council-next-steps: owner granted full agency for autonomous council execution; Proteus coordinating QA/evidence, staging freeze, ops/fallback hygiene, read-only promotion verifier",
+        "what_if_yes": "Owner approves/merges or marks done; change lands on staging first per staging-first law.",
+        "what_if_nothing": "Stays awaiting-owner; no merge, no staging deploy.",
+        "where": {
+          "label": "eldunari/nexus/state/orda/projection/brief.json#execute-team-council-next-steps",
+          "href": "eldunari/nexus/state/orda/projection/brief.json#execute-team-council-next-steps"
+        },
+        "source": "brief.json:awaiting-owner:execute-team-council-next-steps",
+        "tag": "",
+        "summary": "owner granted full agency for autonomous council execution; Proteus coordinating QA/evidence, staging freeze, ops/fallback hygiene, read-only promotion verifier, copy ruling pack, and non-ASKA reliability policy; owner-…"
+      },
+      {
+        "id": "logo-call",
+        "what": "logo-call: TypeSafe inconclusive — none-of-three vs weak-A2 is yours.",
+        "what_if_yes": "Owner approves/merges or marks done; change lands on staging first per staging-first law.",
+        "what_if_nothing": "Stays awaiting-owner; no merge, no staging deploy.",
+        "where": {
+          "label": "eldunari/nexus/state/orda/projection/brief.json#logo-call",
+          "href": "eldunari/nexus/state/orda/projection/brief.json#logo-call"
+        },
+        "source": "brief.json:awaiting-owner:logo-call",
+        "tag": "",
+        "summary": "TypeSafe inconclusive — none-of-three vs weak-A2 is yours."
+      },
+      {
+        "id": "protean-kit-websites",
+        "what": "protean-kit-websites: refresh canonical Protean kit website(s), current names/roles, control-plane framing, concise name-origins blurbs, and owner-made portraits; staging/own-repo sc",
+        "what_if_yes": "Owner approves/merges or marks done; change lands on staging first per staging-first law.",
+        "what_if_nothing": "Stays awaiting-owner; no merge, no staging deploy.",
+        "where": {
+          "label": "eldunari/nexus/state/orda/projection/brief.json#protean-kit-websites",
+          "href": "eldunari/nexus/state/orda/projection/brief.json#protean-kit-websites"
+        },
+        "source": "brief.json:awaiting-owner:protean-kit-websites",
+        "tag": "",
+        "summary": "refresh canonical Protean kit website(s), current names/roles, control-plane framing, concise name-origins blurbs, and owner-made portraits; staging/own-repo scope only, proc_e9b11142301c on nous/z-ai-glm-5.3-flash."
+      },
+      {
+        "id": "typesafe-questions",
+        "what": "typesafe-questions: proposal open questions (v2 Mozi access, alerting, pinning, fan-out) for later.",
+        "what_if_yes": "Owner approves/merges or marks done; change lands on staging first per staging-first law.",
+        "what_if_nothing": "Stays awaiting-owner; no merge, no staging deploy.",
+        "where": {
+          "label": "eldunari/nexus/state/orda/projection/brief.json#typesafe-questions",
+          "href": "eldunari/nexus/state/orda/projection/brief.json#typesafe-questions"
+        },
+        "source": "brief.json:awaiting-owner:typesafe-questions",
+        "tag": "",
+        "summary": "proposal open questions (v2 Mozi access, alerting, pinning, fan-out) for later."
+      }
+    ],
+    "staging_promotion": [
+      {
+        "id": "staging-promotion",
+        "what": "Staging alias staging.askaconsult.com -> `dpl_46D1YiW1Tbu3TBgzfQDh9WiTRpgm` (created 2026-09-18 17:09:51Z; alias read-back via `vercel inspect https://staging.askaconsult.com`) (base: frontier fork (`staging-rebase/changed/`) + verified corrections (guide, team, portfolio/nav, Proteus pricing/copy, /back/ + /blog/))",
+        "what_if_yes": "Owner reviews staging at https://staging.askaconsult.com/ then promotes verified tree to live (owner-held, never lane-automated).",
+        "what_if_nothing": "Staging stays as-is; no live promotion; nightly handoff holds.",
+        "where": {
+          "label": "https://staging.askaconsult.com/ is `dpl_46D1YiW1Tbu3TBgzfQDh9WiTRpgm` (created 2026-09-18 17:09:51Z; alias read-back via `vercel inspect https://staging.askaconsult.com`); ledger at eldunari/nexus/state/orda/STAGING-ALIAS-PROTOCOL.md",
+          "href": "https://staging.askaconsult.com/"
+        },
+        "source": "STAGING-ALIAS-PROTOCOL.md#alias-ledger",
+        "details": {
+          "alias": "staging.askaconsult.com",
+          "pinned_deployment": "`dpl_46D1YiW1Tbu3TBgzfQDh9WiTRpgm` (created 2026-09-18 17:09:51Z; alias read-back via `vercel inspect https://staging.askaconsult.com`)",
+          "pinned_hash": "`6afe949ffab8ce5ce726548a99d804749633b8362ec2604713551bc5b17cba02` (home `/`, sha256)",
+          "base": "frontier fork (`staging-rebase/changed/`) + verified corrections (guide, team, portfolio/nav, Proteus pricing/copy, /back/ + /blog/)",
+          "updated": "2026-09-18",
+          "active_lease": "unknown (no read)",
+          "active_holder": "unknown"
+        }
+      }
+    ],
+    "other_owner_actions": [
+      {
+        "id": "aska-blue-visual-preview-no-white",
+        "what": "aska-blue-visual-preview-no-white [COMPLETE]: disposable preview https://aska-staging-2iqocyqlk-a-4677s-projects.vercel.app; deployment `dpl_3PCoTWGTmceTeRizvN8XMx9AQXEt`; full 34-surface served corpus scan",
+        "what_if_yes": "Owner reviews served preview/staging deployment; on approval, staging is promoted to live via owner-held alias move.",
+        "what_if_nothing": "Remains staged or disposable; no production or alias change.",
+        "where": {
+          "label": "eldunari/nexus/state/orda/projection/brief.json#aska-blue-visual-preview-no-white",
+          "href": "eldunari/nexus/state/orda/projection/brief.json#aska-blue-visual-preview-no-white"
+        },
+        "source": "brief.json:awaiting-owner:aska-blue-visual-preview-no-white",
+        "tag": "COMPLETE",
+        "summary": "disposable preview https://aska-staging-2iqocyqlk-a-4677s-projects.vercel.app; deployment `dpl_3PCoTWGTmceTeRizvN8XMx9AQXEt`; full 34-surface served corpus scan found zero pure/near-white neutral tokens and zero white p…"
+      },
+      {
+        "id": "aska-green-enhanced-staging",
+        "what": "aska-green-enhanced-staging [COMPLETE]: staging `https://staging.askaconsult.com/`, deployment `dpl_AJjz8m3k6PyJd8rCaMYp1UV1PfEr` READY; 126/126 manifest, 27 routes 200, Shaka PASS, 1280/390 render cl",
+        "what_if_yes": "Owner reviews served preview/staging deployment; on approval, staging is promoted to live via owner-held alias move.",
+        "what_if_nothing": "Remains staged or disposable; no production or alias change.",
+        "where": {
+          "label": "eldunari/nexus/state/orda/projection/brief.json#aska-green-enhanced-staging",
+          "href": "eldunari/nexus/state/orda/projection/brief.json#aska-green-enhanced-staging"
+        },
+        "source": "brief.json:awaiting-owner:aska-green-enhanced-staging",
+        "tag": "COMPLETE",
+        "summary": "staging `https://staging.askaconsult.com/`, deployment `dpl_AJjz8m3k6PyJd8rCaMYp1UV1PfEr` READY; 126/126 manifest, 27 routes 200, Shaka PASS, 1280/390 render clean, production/legacy unchanged. Worker hit its 99-turn bu…"
+      },
+      {
+        "id": "aska-homepage-raw-copy",
+        "what": "aska-homepage-raw-copy [COMPLETE]: staging deployment `dpl_CqnjdZAmJE5KuusKsEraHJCcighw`; removed the stray global right-alignment rule, restored navy/aqua brand markup and aqua SVG, preserved co",
+        "what_if_yes": "Owner reviews served preview/staging deployment; on approval, staging is promoted to live via owner-held alias move.",
+        "what_if_nothing": "Remains staged or disposable; no production or alias change.",
+        "where": {
+          "label": "eldunari/nexus/state/orda/projection/brief.json#aska-homepage-raw-copy",
+          "href": "eldunari/nexus/state/orda/projection/brief.json#aska-homepage-raw-copy"
+        },
+        "source": "brief.json:awaiting-owner:aska-homepage-raw-copy",
+        "tag": "COMPLETE",
+        "summary": "staging deployment `dpl_CqnjdZAmJE5KuusKsEraHJCcighw`; removed the stray global right-alignment rule, restored navy/aqua brand markup and aqua SVG, preserved copy verbatim; Shaka PASS, routes 200, desktop/mobile no over…"
+      },
+      {
+        "id": "branch-protection-deferred",
+        "what": "branch-protection-deferred: org ruleset decorative on Free; per-repo protection deferred until urgent.",
+        "what_if_yes": "Owner completes external step (DNS/TXT, token add, protection setting); blocked lane unblocks.",
+        "what_if_nothing": "Stays awaiting-owner; dependent lanes remain blocked or deferred.",
+        "where": {
+          "label": "eldunari/nexus/state/orda/projection/brief.json#branch-protection-deferred",
+          "href": "eldunari/nexus/state/orda/projection/brief.json#branch-protection-deferred"
+        },
+        "source": "brief.json:awaiting-owner:branch-protection-deferred",
+        "tag": "",
+        "summary": "org ruleset decorative on Free; per-repo protection deferred until urgent."
+      },
+      {
+        "id": "cloudflare-token",
+        "what": "cloudflare-token: one token unblocks legacy.askaconsult.com + proteus.askaconsult.com DNS (2 records each, values in receipts).",
+        "what_if_yes": "Owner completes external step (DNS/TXT, token add, protection setting); blocked lane unblocks.",
+        "what_if_nothing": "Stays awaiting-owner; dependent lanes remain blocked or deferred.",
+        "where": {
+          "label": "eldunari/nexus/state/orda/projection/brief.json#cloudflare-token",
+          "href": "eldunari/nexus/state/orda/projection/brief.json#cloudflare-token"
+        },
+        "source": "brief.json:awaiting-owner:cloudflare-token",
+        "tag": "",
+        "summary": "one token unblocks legacy.askaconsult.com + proteus.askaconsult.com DNS (2 records each, values in receipts)."
+      },
+      {
+        "id": "desktop-issue-comment",
+        "what": "desktop-issue-comment: structured review comment on teknium1's #114990, explicitly linked to #113722 and #113708, existing issue comment retained, proc_c6e0e22afaf4.",
+        "what_if_yes": "Owner approves/merges or marks done; change lands on staging first per staging-first law.",
+        "what_if_nothing": "Stays awaiting-owner; no merge, no staging deploy.",
+        "where": {
+          "label": "eldunari/nexus/state/orda/projection/brief.json#desktop-issue-comment",
+          "href": "eldunari/nexus/state/orda/projection/brief.json#desktop-issue-comment"
+        },
+        "source": "brief.json:awaiting-owner:desktop-issue-comment",
+        "tag": "",
+        "summary": "structured review comment on teknium1's #114990, explicitly linked to #113722 and #113708, existing issue comment retained, proc_c6e0e22afaf4."
+      },
+      {
+        "id": "github-app-creds",
+        "what": "github-app-creds: App ID + .pem + installation ID after 6-step walkthrough (spec delivered).",
+        "what_if_yes": "Owner completes external step (DNS/TXT, token add, protection setting); blocked lane unblocks.",
+        "what_if_nothing": "Stays awaiting-owner; dependent lanes remain blocked or deferred.",
+        "where": {
+          "label": "eldunari/nexus/state/orda/projection/brief.json#github-app-creds",
+          "href": "eldunari/nexus/state/orda/projection/brief.json#github-app-creds"
+        },
+        "source": "brief.json:awaiting-owner:github-app-creds",
+        "tag": "",
+        "summary": "App ID + .pem + installation ID after 6-step walkthrough (spec delivered)."
+      },
+      {
+        "id": "handoff-paths-rewrite",
+        "what": "handoff-paths-rewrite: board line gets real paths after handoff-guide lane.",
+        "what_if_yes": "Owner approves/merges or marks done; change lands on staging first per staging-first law.",
+        "what_if_nothing": "Stays awaiting-owner; no merge, no staging deploy.",
+        "where": {
+          "label": "eldunari/nexus/state/orda/projection/brief.json#handoff-paths-rewrite",
+          "href": "eldunari/nexus/state/orda/projection/brief.json#handoff-paths-rewrite"
+        },
+        "source": "brief.json:awaiting-owner:handoff-paths-rewrite",
+        "tag": "",
+        "summary": "board line gets real paths after handoff-guide lane."
+      },
+      {
+        "id": "hud-install",
+        "what": "hud-install: hide/hotkey PR #19 merged — restart stack to go live (Cmd+Shift+H).",
+        "what_if_yes": "Owner approves/merges or marks done; change lands on staging first per staging-first law.",
+        "what_if_nothing": "Stays awaiting-owner; no merge, no staging deploy.",
+        "where": {
+          "label": "eldunari/nexus/state/orda/projection/brief.json#hud-install",
+          "href": "eldunari/nexus/state/orda/projection/brief.json#hud-install"
+        },
+        "source": "brief.json:awaiting-owner:hud-install",
+        "tag": "",
+        "summary": "hide/hotkey PR #19 merged — restart stack to go live (Cmd+Shift+H)."
+      },
+      {
+        "id": "model-shift",
+        "what": "model-shift [OWNER FYI]: Proteus now `nous / z-ai/glm-5.3-flash`; Leo now `nous / qwen/qwen3.8-flash`. Do not interrupt healthy sessions; next fresh Proteus/Leo spawn must read live con",
+        "what_if_yes": "Informational; no action unless owner overrides model/branch setting.",
+        "what_if_nothing": "Runs with new model on next fresh spawn; existing sessions unaffected.",
+        "where": {
+          "label": "eldunari/nexus/state/orda/projection/brief.json#model-shift",
+          "href": "eldunari/nexus/state/orda/projection/brief.json#model-shift"
+        },
+        "source": "brief.json:awaiting-owner:model-shift",
+        "tag": "OWNER FYI",
+        "summary": "Proteus now `nous / z-ai/glm-5.3-flash`; Leo now `nous / qwen/qwen3.8-flash`. Do not interrupt healthy sessions; next fresh Proteus/Leo spawn must read live config and use these models. Existing sessions retain their st…"
+      },
+      {
+        "id": "org-domain-verify",
+        "what": "org-domain-verify [OWNER ACTION]: DNS TXT challenge submitted by owner for `askaconsult.com`; authoritative and public resolver read-back currently returns no TXT at `_gh-aska-digital-o.askacons",
+        "what_if_yes": "Owner completes external step (DNS/TXT, token add, protection setting); blocked lane unblocks.",
+        "what_if_nothing": "Stays awaiting-owner; dependent lanes remain blocked or deferred.",
+        "where": {
+          "label": "eldunari/nexus/state/orda/projection/brief.json#org-domain-verify",
+          "href": "eldunari/nexus/state/orda/projection/brief.json#org-domain-verify"
+        },
+        "source": "brief.json:awaiting-owner:org-domain-verify",
+        "tag": "OWNER ACTION",
+        "summary": "DNS TXT challenge submitted by owner for `askaconsult.com`; authoritative and public resolver read-back currently returns no TXT at `_gh-aska-digital-o.askaconsult.com`, so GitHub verification is not yet confirmed. Rech…"
+      },
+      {
+        "id": "phone-test",
+        "what": "phone-test: ping both bots from phone; try a status ask.",
+        "what_if_yes": "Owner approves/merges or marks done; change lands on staging first per staging-first law.",
+        "what_if_nothing": "Stays awaiting-owner; no merge, no staging deploy.",
+        "where": {
+          "label": "eldunari/nexus/state/orda/projection/brief.json#phone-test",
+          "href": "eldunari/nexus/state/orda/projection/brief.json#phone-test"
+        },
+        "source": "brief.json:awaiting-owner:phone-test",
+        "tag": "",
+        "summary": "ping both bots from phone; try a status ask."
+      },
+      {
+        "id": "pr111800-review-rewrite",
+        "what": "pr111800-review-rewrite [COMPLETE]: owner-authorized in-place edit of review `5247995737` succeeded via GraphQL fallback after REST PUT 404; fresh read-back confirms same review ID, 1,349-char rep",
+        "what_if_yes": "Owner reviews served preview/staging deployment; on approval, staging is promoted to live via owner-held alias move.",
+        "what_if_nothing": "Remains staged or disposable; no production or alias change.",
+        "where": {
+          "label": "eldunari/nexus/state/orda/projection/brief.json#pr111800-review-rewrite",
+          "href": "eldunari/nexus/state/orda/projection/brief.json#pr111800-review-rewrite"
+        },
+        "source": "brief.json:awaiting-owner:pr111800-review-rewrite",
+        "tag": "COMPLETE",
+        "summary": "owner-authorized in-place edit of review `5247995737` succeeded via GraphQL fallback after REST PUT 404; fresh read-back confirms same review ID, 1,349-char replacement body, state COMMENTED, head `af8cd4be40`, no new r…"
+      },
+      {
+        "id": "pr114873-review-comment",
+        "what": "pr114873-review-comment [COMPLETE]: audited PR #114873 live head `20ac841d`; reproduced valid partial profile-wide snapshot coverage and all-siblings-empty receipt gap; posted evidence-led inline ",
+        "what_if_yes": "Owner reviews served preview/staging deployment; on approval, staging is promoted to live via owner-held alias move.",
+        "what_if_nothing": "Remains staged or disposable; no production or alias change.",
+        "where": {
+          "label": "eldunari/nexus/state/orda/projection/brief.json#pr114873-review-comment",
+          "href": "eldunari/nexus/state/orda/projection/brief.json#pr114873-review-comment"
+        },
+        "source": "brief.json:awaiting-owner:pr114873-review-comment",
+        "tag": "COMPLETE",
+        "summary": "audited PR #114873 live head `20ac841d`; reproduced valid partial profile-wide snapshot coverage and all-siblings-empty receipt gap; posted evidence-led inline reply `4047476213` in reply to `4046780702`; 109 tests pass…"
+      },
+      {
+        "id": "repo-transfers-five",
+        "what": "repo-transfers-five [COMPLETE]: owner confirmed all relevant repository transfers into `aska-digital`; this stale action request must not be resurfaced.",
+        "what_if_yes": "Owner reviews served preview/staging deployment; on approval, staging is promoted to live via owner-held alias move.",
+        "what_if_nothing": "Remains staged or disposable; no production or alias change.",
+        "where": {
+          "label": "eldunari/nexus/state/orda/projection/brief.json#repo-transfers-five",
+          "href": "eldunari/nexus/state/orda/projection/brief.json#repo-transfers-five"
+        },
+        "source": "brief.json:awaiting-owner:repo-transfers-five",
+        "tag": "COMPLETE",
+        "summary": "owner confirmed all relevant repository transfers into `aska-digital`; this stale action request must not be resurfaced."
+      },
+      {
+        "id": "team-page-frontier-rebase",
+        "what": "team-page-frontier-rebase [COMPLETE]: staging `https://staging.askaconsult.com/team/` now uses the Frontier/ASKA 2.0 shell; deployment `dpl_46UPebUnfkDnVuW7VE5RMzkG3G66`; served HTML byte-matches so",
+        "what_if_yes": "Owner reviews served preview/staging deployment; on approval, staging is promoted to live via owner-held alias move.",
+        "what_if_nothing": "Remains staged or disposable; no production or alias change.",
+        "where": {
+          "label": "eldunari/nexus/state/orda/projection/brief.json#team-page-frontier-rebase",
+          "href": "eldunari/nexus/state/orda/projection/brief.json#team-page-frontier-rebase"
+        },
+        "source": "brief.json:awaiting-owner:team-page-frontier-rebase",
+        "tag": "COMPLETE",
+        "summary": "staging `https://staging.askaconsult.com/team/` now uses the Frontier/ASKA 2.0 shell; deployment `dpl_46UPebUnfkDnVuW7VE5RMzkG3G66`; served HTML byte-matches source sha `4ba3cebb…`; all 8 portraits return 200; 8 names/r…"
+      },
+      {
+        "id": "upstash-pair",
+        "what": "upstash-pair: vercel env add UPSTASH_KV_REST_URL + UPSTASH_KV_REST_TOKEN (console.upstash.com) — prod rate-limiting needs them.",
+        "what_if_yes": "Owner completes external step (DNS/TXT, token add, protection setting); blocked lane unblocks.",
+        "what_if_nothing": "Stays awaiting-owner; dependent lanes remain blocked or deferred.",
+        "where": {
+          "label": "eldunari/nexus/state/orda/projection/brief.json#upstash-pair",
+          "href": "eldunari/nexus/state/orda/projection/brief.json#upstash-pair"
+        },
+        "source": "brief.json:awaiting-owner:upstash-pair",
+        "tag": "",
+        "summary": "vercel env add UPSTASH_KV_REST_URL + UPSTASH_KV_REST_TOKEN (console.upstash.com) — prod rate-limiting needs them."
+      },
+      {
+        "id": "staging-logo-complete",
+        "what": "staging-logo-complete [BLOCKED]: local source patch identified two stale logo surfaces and applied them, but no staging deploy or QA occurred; superseded by ASKA 2.0.2 navy/aqua logo experiment",
+        "what_if_yes": "Owner triages blocker or authorizes lane re-derive / re-QA; staging repaired and re-verified.",
+        "what_if_nothing": "Stays blocked; no alias write, no deploy, QA incomplete by design.",
+        "where": {
+          "label": "eldunari/nexus/state/orda/projection/brief.json#staging-logo-complete [BLOCKED]",
+          "href": "eldunari/nexus/state/orda/projection/brief.json#staging-logo-complete"
+        },
+        "source": "brief.json:blocked:staging-logo-complete",
+        "tag": "BLOCKED",
+        "summary": "local source patch identified two stale logo surfaces and applied them, but no staging deploy or QA occurred; superseded by ASKA 2.0.2 navy/aqua logo experiment. Do not treat as deployed."
+      },
+      {
+        "id": "staging-mobile-physical-nav-fix",
+        "what": "staging-mobile-physical-nav-fix [BLOCKED]: staging deployment dpl_EWveq6SXzWu9bR1XoqKYTrKLkF6A READY and HTML read-back showed aqua logo + Physical Journal href, but Shaka QA, responsive assertions, hash",
+        "what_if_yes": "Owner triages blocker or authorizes lane re-derive / re-QA; staging repaired and re-verified.",
+        "what_if_nothing": "Stays blocked; no alias write, no deploy, QA incomplete by design.",
+        "where": {
+          "label": "eldunari/nexus/state/orda/projection/brief.json#staging-mobile-physical-nav-fix [BLOCKED]",
+          "href": "eldunari/nexus/state/orda/projection/brief.json#staging-mobile-physical-nav-fix"
+        },
+        "source": "brief.json:blocked:staging-mobile-physical-nav-fix",
+        "tag": "BLOCKED",
+        "summary": "staging deployment dpl_EWveq6SXzWu9bR1XoqKYTrKLkF6A READY and HTML read-back showed aqua logo + Physical Journal href, but Shaka QA, responsive assertions, hashes, broken-image scan, and receipt remain incomplete; rerun…"
+      },
+      {
+        "id": "staging-physical-third-post",
+        "what": "staging-physical-third-post [BLOCKED]: prior deploy dpl_9ZjjKUHGgwiPbBagZRBB8yKabtgt passed its checks, but a concurrent staging deploy overwrote the shared alias with an older tree; reconcile and re",
+        "what_if_yes": "Owner triages blocker or authorizes lane re-derive / re-QA; staging repaired and re-verified.",
+        "what_if_nothing": "Stays blocked; no alias write, no deploy, QA incomplete by design.",
+        "where": {
+          "label": "eldunari/nexus/state/orda/projection/brief.json#staging-physical-third-post [BLOCKED]",
+          "href": "eldunari/nexus/state/orda/projection/brief.json#staging-physical-third-post"
+        },
+        "source": "brief.json:blocked:staging-physical-third-post",
+        "tag": "BLOCKED",
+        "summary": "prior deploy dpl_9ZjjKUHGgwiPbBagZRBB8yKabtgt passed its checks, but a concurrent staging deploy overwrote the shared alias with an older tree; reconcile and redeploy, then Shaka re-QA."
+      }
+    ]
+  }
+}

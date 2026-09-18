@@ -1,0 +1,3 @@
+Before change: tested on baseline stash under ~/.hermes location
+10 failed, 420 passed (same as after; 6 overview_modes empty-registry + 1 scanner +1 standalone build/path +2 task_home fixture drift)
+See /Users/kethuda/.hermes/mozi-continuum-review-test/server test run with stash

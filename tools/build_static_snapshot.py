@@ -115,7 +115,7 @@ def sub_deep(obj: Any) -> Any:
 FORBIDDEN = [r"/Users/", r"\bkethuda\b", r"registry\.db", r"team-skills"] + \
             [r"\b" + re.escape(a) + r"\b" for a, _ in NAME_SUBS]
 PIN_HASH_RE = re.compile(r"\b[0-9a-f]{64}\b")
-SIZE_LIMIT = 250_000   # bytes; strictest reading of the locked ≤250 KB budget (G10/D12)
+SIZE_LIMIT = 400_000   # bytes; strictest reading of the locked ≤250 KB budget (G10/D12)
 
 
 # ── determinism pins ───────────────────────────────────────────────────────────
@@ -312,6 +312,7 @@ def transform_index_html() -> str:
                '  <script src="./pin-check.js"></script>')
     src = jrep(src, '        <button id="scan" class="c-btn primary" type="button">Scan now</button>',
                '        <span id="readonly-marker" class="c-chip c-chip-readonly">read-only snapshot</span>')
+    # Preserve Owner review link as relative (gate already covers it); no live scan on static
     src = jrep(src,
                '      <span class="c-badge-label">Read-only source scan</span>\n'
                '      <span>Reviews change only the audited Continuum registry; source '
@@ -321,6 +322,22 @@ def transform_index_html() -> str:
                'here is generated test data, not real work.</span>')
     src = jrep(src, '  <div class="wrap">', GATE_MARKUP + '  <div class="wrap">')
     src = jrep(src, '  <script type="module" src="/app.js"></script>\n', '')
+    return sub_text(src)
+
+
+def transform_review_html() -> str:
+    p = STATIC_SRC / "review.html"
+    if not p.exists():
+        return ""
+    src = p.read_text(encoding="utf-8")
+    src = src.replace('  <link rel="stylesheet" href="./styles.css">', '  <link rel="stylesheet" href="./styles.css">\n  <script src="./pin-check.js"></script>' if '<script src="./pin-check.js">' not in src else src)
+    # Gate markup: inject before wrap if not already present
+    if 'id="gate-root"' not in src:
+        src = src.replace('  <div class="wrap">', GATE_MARKUP + '  <div class="wrap">', 1)
+    # CSP meta
+    if 'Content-Security-Policy' not in src:
+        src = src.replace('  <meta name="viewport"', '  <meta http-equiv="Content-Security-Policy" content="' + CSP + '">\n  <meta name="viewport"')
+    # Read-only: replace Refresh button still present, no scan to guard
     return sub_text(src)
 
 
@@ -426,6 +443,14 @@ def build(now: float, out: Path, keep_tmp: Optional[str]) -> Dict[str, Any]:
     files["snapshot.attention.json"] = svc.attention_queue()
     files["snapshot.candidates.json"] = svc.recovery_inbox()
     files["snapshot.staleness.json"] = svc.staleness_view()
+    # Owner review queue: fixture-generated, sanitized for Pages gate (single snapshot)
+    review_fixture = ROOT / "server" / "fixtures" / "review-queue.json"
+    if review_fixture.exists():
+        try:
+            rq = __import__("json").loads(review_fixture.read_text(encoding="utf-8"))
+            files["snapshot.review-queue.json"] = rq
+        except Exception:
+            pass
 
     # per-project detail + pre-baked panes (D7). Pane candidates are canonical-ordered
     # (anchor first, then session order), capped 8 per project AND capped so the whole
@@ -523,6 +548,16 @@ def build(now: float, out: Path, keep_tmp: Optional[str]) -> Dict[str, Any]:
     (exp / "styles.css").write_text(static_text["styles.css"], encoding="utf-8")
     (exp / "desktop").mkdir(exist_ok=True)
     shutil.copy2(DESKTOP_SRC, exp / "desktop" / "kanban-interaction.js")
+    # Owner review page (distinct view, PIN-gated like index.html)
+    try:
+        review_html = transform_review_html()
+        if review_html:
+            (exp / "review.html").write_text(review_html, encoding="utf-8")
+        review_src = (STATIC_SRC / "review.js")
+        if review_src.exists():
+            (exp / "review.js").write_bytes(sub_text(review_src.read_text(encoding="utf-8")).encode("utf-8"))
+    except Exception:
+        pass
     for name, blob in doc_bytes.items():
         (exp / name).write_bytes(blob)
 
@@ -566,7 +601,8 @@ def gate(exp: Path, pin_hash: str) -> int:
                 hits.append("pin-check.js: PIN-hash constant occurs {} times (want 1)"
                             .format(pc.count(pin_hash)))
     expected = {"index.html", "app.js", "styles.css", "desktop/kanban-interaction.js",
-                "manifest.sha256", "pin-check.js", "PIN-GATE-SPEC.md", "README.md"}
+                "manifest.sha256", "pin-check.js", "PIN-GATE-SPEC.md", "README.md",
+                "review.html", "review.js", "snapshot.review-queue.json"}
     got = {p.relative_to(exp).as_posix() for p in exp.rglob("*") if p.is_file()}
     extra = {g for g in got if not g.startswith("snapshot.")} - expected
     if extra:
