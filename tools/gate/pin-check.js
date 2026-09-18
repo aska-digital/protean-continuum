@@ -10,7 +10,7 @@
  * SHA-256 hex of its exact UTF-8 bytes. Re-hash procedure: PIN-GATE-SPEC.md.
  * The gate is honest friction over synthetic data, not confidentiality.
  */
-const PIN_HASH_HEX = "00aa6525c6fde5a50d38168637e61f25b9ffb28c246503e5c6032950cb59c84b";
+const PIN_HASH_HEX = "3c7f572560e6d2f14680d05690428dbedc48378a6b8015d86024428f36791dad";
 
 (function () {
   'use strict'
