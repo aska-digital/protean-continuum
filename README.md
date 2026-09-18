@@ -57,7 +57,11 @@ server/            Runtime tree, byte-faithful mirror of the live bundle root.
   dashboard/       Browser entrypoint (standalone.py), API router (plugin_api.py),
                    manifest.json, static shell (index.html, app.js, styles.css).
   desktop/         kanban-interaction.js — shared pure interaction module, served at
-                   /desktop/ and imported by app.js.
+                   /desktop/ and imported by app.js. plugin.js + plugin_build.py —
+                   the Hermes-Desktop plugin surface (M8) and its single-file builder.
+  review/          Offline review harnesses (ab_snapshot.py, mc_measure.py — no server,
+                   no network) and the lane receipts that freeze their contracts.
+  __init__.py      Bundle package marker (legacy `-m build.dashboard...` form).
   continuum/       Core package: service.py (singleton), config.py, registry.py,
                    scanner.py, classify.py, cluster.py, evidence.py, model.py,
                    audience.py, task_home.py (parser/sync/exporters), action_log.py
@@ -75,6 +79,33 @@ docs/              Architecture specs (continuum-sync, action-log) and history/
                    84f4e9de15b2fb8acf183d2fc658698e — move is LIVE), action-log
                    view-filter implementation + QA, external-only default view.
 ```
+
+## Testing
+
+```sh
+cd server && python3 -m pytest tests -q
+```
+
+427/430 pass on a fresh clone (Python 3 + fastapi/starlette/uvicorn/pydantic, run with
+`-p no:cacheprovider`). Three documented couplings account for the rest — none is a defect
+in this tree, and the code is byte-faithful to the live instance, so they are carried,
+not edited:
+
+- `test_standalone.py::test_registry_path_is_preserved` asserts the bundle directory is
+  *named* `build` (the live tree's name); here it is `server/`. The behavioural invariant it
+  protects — the registry path stays bundle-relative and is never relocated — holds and is
+  visible in the assertion diff.
+- `test_task_home_sync.py::test_th_a1/th_a2` compare the frozen v2 fixture
+  (`fixtures/task_home/task-home.md`, byte-identical to the live tree) against stale v1
+  expectations. This is the v2 re-import blocker itself — see
+  `docs/history/v2exec-mozi-receipt.md` — and fails identically on the live tree.
+- Six `test_overview_modes.py` tests read the *live corpus* from `data/registry.db`. On an
+  empty registry they fail by construction; provision the data first (run a scan, or take a
+  read-only snapshot of an existing registry: `sqlite3 <src>.db ".backup data/registry.db"`).
+
+Note: the action-log scope classification treats paths under `~/.hermes` as internal
+(`continuum/action_log.py` `INTERNAL_PATH_ROOT`), and the test suite relies on the bundle
+living there — run the suite from a clone under `~/.hermes`.
 
 ## Notes
 
