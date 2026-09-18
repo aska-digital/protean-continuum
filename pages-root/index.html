@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'self'; form-action 'none'; base-uri 'self'; frame-ancestors 'none'; object-src 'none'">
+  <title>Continuum — board</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./pin-check.js"></script>
+</head>
+<body>
+  <div id="gate-root" class="c-gate" data-state="idle">
+    <div class="c-gate-card" role="dialog" aria-modal="true"
+         aria-labelledby="gate-title" aria-describedby="gate-help" tabindex="-1">
+      <div class="c-gate-brand">
+        <span class="c-gate-mark" aria-hidden="true"></span>
+        <span class="c-gate-wordmark" aria-hidden="true">Continuum</span>
+      </div>
+      <h1 id="gate-title" class="c-gate-title">Access required</h1>
+      <p id="gate-help" class="c-gate-help">Enter the access code to open this snapshot.</p>
+      <form id="gate-form" class="c-gate-form" novalidate>
+        <label id="gate-label" class="c-gate-label" for="gate-input">Access code</label>
+        <input id="gate-input" class="c-input c-gate-input" type="password"
+               name="access-code" inputmode="text" autocapitalize="off"
+               autocomplete="off" autocorrect="off" spellcheck="false"
+               enterkeyhint="go" maxlength="128" aria-describedby="gate-help">
+        <button id="gate-submit" class="c-btn primary c-gate-submit" type="submit">Unlock</button>
+      </form>
+      <p id="gate-status" class="c-gate-status" role="status"
+         aria-live="polite" aria-atomic="true"></p>
+      <p class="c-gate-note">The snapshot contains synthetic demonstration data, not real work.</p>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <header class="c-header">
+      <div class="c-brand">
+        <div class="c-logo" aria-hidden="true">C</div>
+        <div>
+          <h1>Continuum</h1>
+          <div class="c-tag">read-only cross-profile project recovery &middot; local</div>
+        </div>
+      </div>
+      <div class="c-header-actions">
+        <input id="filter" class="c-filter" type="search" placeholder="filter (names, ids)" aria-label="filter projects">
+        <span id="readonly-marker" class="c-chip c-chip-readonly">read-only snapshot</span>
+      </div>
+    </header>
+
+    <div class="c-banner" role="note">
+      <span class="c-badge-label">Synthetic data</span>
+      <span>Synthetic demonstration snapshot: every profile and project shown here is generated test data, not real work.</span>
+    </div>
+
+    <main id="app" aria-live="polite">
+      <div class="c-skeleton" role="status" aria-label="Loading board"></div>
+      <div class="c-skeleton"></div>
+      <div class="c-skeleton"></div>
+    </main>
+
+    <div id="toast-root" aria-live="polite"></div>
+    <div id="live" class="c-visually-hidden" aria-live="polite"></div>
+  </div>
+</body>
+</html>
