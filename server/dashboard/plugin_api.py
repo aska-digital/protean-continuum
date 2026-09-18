@@ -198,6 +198,24 @@ def overview(mode: Optional[str] = None,
         raise HTTPException(status_code=500, detail=str(exc))
 
 
+# -- Owner review queue (fixtures-only, generated at build time) ---------------
+import json as _json
+from pathlib import Path as _Path
+from fastapi.responses import JSONResponse as _JSONResponse
+
+_FIXTURE_QUEUE = _Path(__file__).resolve().parent.parent / "fixtures" / "review-queue.json"
+
+@router.get("/review-queue")
+def review_queue():
+    if _FIXTURE_QUEUE.exists():
+        try:
+            data = _json.loads(_FIXTURE_QUEUE.read_text(encoding="utf-8"))
+            return _JSONResponse(data)
+        except Exception as exc:
+            return _JSONResponse({"error": str(exc)}, status_code=500)
+    return _JSONResponse({"error": "review-queue.json not found; run tools/generate_review_queue.py"}, status_code=404)
+
+
 @router.get("/events")
 def events() -> Dict[str, Any]:
     """Polling fallback for the socket (socket is a no-op on OAuth remotes).

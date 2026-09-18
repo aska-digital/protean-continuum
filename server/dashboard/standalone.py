@@ -56,6 +56,8 @@ STATIC_DIR = Path(__file__).resolve().parent / "static"
 INDEX_HTML = STATIC_DIR / "index.html"
 APP_JS = STATIC_DIR / "app.js"
 STYLES_CSS = STATIC_DIR / "styles.css"
+REVIEW_HTML = STATIC_DIR / "review.html"
+REVIEW_JS = STATIC_DIR / "review.js"
 SHARED_INTERACTION_JS = BUILD_ROOT / "desktop" / "kanban-interaction.js"
 
 
@@ -148,6 +150,43 @@ def create_app() -> FastAPI:
     @app.get("/desktop/kanban-interaction.js", include_in_schema=False)
     def shared_interaction() -> FileResponse:
         return FileResponse(str(SHARED_INTERACTION_JS), media_type="text/javascript")
+
+    @app.get("/review.html", include_in_schema=False)
+    def review_html() -> FileResponse:
+        return FileResponse(str(REVIEW_HTML), media_type="text/html")
+
+    @app.get("/review", include_in_schema=False)
+    def review_alias() -> FileResponse:
+        return FileResponse(str(REVIEW_HTML), media_type="text/html")
+
+    @app.get("/review.js", include_in_schema=False)
+    def review_js() -> FileResponse:
+        return FileResponse(str(REVIEW_JS), media_type="text/javascript")
+
+    # Fixtures-only review queue (generated at build time, no live API at page load for Pages)
+    from fastapi.responses import JSONResponse
+    import json
+    FIXTURE_QUEUE = Path(__file__).resolve().parent.parent / "fixtures" / "review-queue.json"
+
+    @app.get("/api/plugins/continuum/review-queue", include_in_schema=False)
+    def review_queue() -> JSONResponse:
+        if FIXTURE_QUEUE.exists():
+            try:
+                data = json.loads(FIXTURE_QUEUE.read_text(encoding="utf-8"))
+                return JSONResponse(data)
+            except Exception as exc:
+                return JSONResponse({"error": str(exc)}, status_code=500)
+        return JSONResponse({"error": "review-queue.json not found; run tools/generate_review_queue.py"}, status_code=404)
+
+    @app.get("/review-queue.json", include_in_schema=False)
+    def review_queue_static() -> JSONResponse:
+        if FIXTURE_QUEUE.exists():
+            try:
+                data = json.loads(FIXTURE_QUEUE.read_text(encoding="utf-8"))
+                return JSONResponse(data)
+            except Exception as exc:
+                return JSONResponse({"error": str(exc)}, status_code=500)
+        return JSONResponse({"error": "review-queue.json not found"}, status_code=404)
 
     return app
 

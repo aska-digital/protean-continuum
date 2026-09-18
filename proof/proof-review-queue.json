@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "generated_utc": "2026-09-18T18:00:00Z",
+  "source_revision": 0,
+  "source_paths": {
+    "brief_json": "fixtures/synthetic/brief.json",
+    "draft_registry": "fixtures/synthetic/DRAFT-REGISTRY.md",
+    "staging_ledger": "fixtures/synthetic/STAGING-ALIAS-PROTOCOL.md",
+    "consent_search": "fixtures/synthetic/consent-list.md"
+  },
+  "sources_read": {
+    "brief_json": true,
+    "draft_registry": true,
+    "staging_ledger": true
+  },
+  "is_stale": false,
+  "stale_reason": null,
+  "_synthetic": true,
+  "_note": "Synthetic proof artifact (scrubbed 2026-09-18 per Finding 1). No personal paths or live registry data.",
+  "counts": {
+    "github_drafts": 1,
+    "mechanics": 1,
+    "staging_promotion": 1,
+    "other_owner_actions": 1
+  },
+  "groups": {
+    "github_drafts": [
+      {
+        "id": "synthetic-proof-draft-001",
+        "what": "Synthetic proof draft 001 -> synthetic-org/synthetic-repo",
+        "what_if_yes": "Owner approves then post.",
+        "what_if_nothing": "No external post.",
+        "where": {
+          "label": "fixtures/synthetic/DRAFT-PR-synthetic-001.md",
+          "href": "fixtures/synthetic/DRAFT-PR-synthetic-001.md"
+        },
+        "source": "synthetic-DRAFT-REGISTRY.md#synthetic-proof-draft-001",
+        "state": "HELD — synthetic"
+      }
+    ],
+    "mechanics": [
+      {
+        "id": "synthetic-proof-mechanics-001",
+        "what": "synthetic-proof-mechanics-001: synthetic mechanics proof",
+        "what_if_yes": "Owner approves synthetic mechanics.",
+        "what_if_nothing": "No merge.",
+        "where": {
+          "label": "fixtures/synthetic/brief.json#synthetic-proof-mechanics-001",
+          "href": "fixtures/synthetic/brief.json#synthetic-proof-mechanics-001"
+        },
+        "source": "synthetic-brief.json:awaiting-owner:synthetic-proof-mechanics-001",
+        "tag": "",
+        "summary": "Synthetic proof mechanics."
+      }
+    ],
+    "staging_promotion": [
+      {
+        "id": "synthetic-proof-staging",
+        "what": "Synthetic staging -> synthetic-deployment",
+        "what_if_yes": "Owner reviews synthetic staging.",
+        "what_if_nothing": "No promotion.",
+        "where": {
+          "label": "https://staging.example.com/ is synthetic-deployment; ledger at fixtures/synthetic/STAGING-ALIAS-PROTOCOL.md",
+          "href": "https://staging.example.com/"
+        },
+        "source": "synthetic-STAGING-ALIAS-PROTOCOL.md#alias-ledger",
+        "details": {
+          "alias": "staging.example.com",
+          "pinned_deployment": "synthetic-deployment-dpl_proof001",
+          "pinned_hash": "synthetic-sha256-0000000000000000000000000000000000000000000000000000000000000000",
+          "base": "synthetic frontier fork",
+          "updated": "2026-09-18",
+          "active_lease": "none",
+          "active_holder": "none"
+        }
+      }
+    ],
+    "other_owner_actions": [
+      {
+        "id": "synthetic-proof-action-001",
+        "what": "synthetic-proof-action-001: synthetic owner action proof",
+        "what_if_yes": "Owner reviews synthetic action.",
+        "what_if_nothing": "No change.",
+        "where": {
+          "label": "fixtures/synthetic/brief.json#synthetic-proof-action-001",
+          "href": "fixtures/synthetic/brief.json#synthetic-proof-action-001"
+        },
+        "source": "synthetic-brief.json:awaiting-owner:synthetic-proof-action-001",
+        "tag": "",
+        "summary": "Synthetic proof owner action."
+      }
+    ]
+  }
+}

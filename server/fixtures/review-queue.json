@@ -1,0 +1,132 @@
+{
+  "schema_version": 1,
+  "generated_utc": "2026-09-18T18:00:00Z",
+  "source_revision": 0,
+  "source_paths": {
+    "brief_json": "fixtures/synthetic/brief.json",
+    "draft_registry": "fixtures/synthetic/DRAFT-REGISTRY.md",
+    "staging_ledger": "fixtures/synthetic/STAGING-ALIAS-PROTOCOL.md",
+    "consent_search": "fixtures/synthetic/consent-list.md"
+  },
+  "sources_read": {
+    "brief_json": true,
+    "draft_registry": true,
+    "staging_ledger": true
+  },
+  "is_stale": false,
+  "stale_reason": null,
+  "_synthetic": true,
+  "_note": "Synthetic fixture for tests and static export. No live Orda registry data. All identifiers are synthetic-* and paths are relative placeholders per Finding 1.",
+  "counts": {
+    "github_drafts": 2,
+    "mechanics": 2,
+    "staging_promotion": 1,
+    "other_owner_actions": 2
+  },
+  "groups": {
+    "github_drafts": [
+      {
+        "id": "synthetic-draft-001",
+        "what": "Synthetic Draft 001: example docs contribution -> synthetic-org/synthetic-repo issue",
+        "what_if_yes": "Owner approves exact target + text; post via verified account then live read-back.",
+        "what_if_nothing": "Stays in synthetic registry; no external post, no PR, no issue comment.",
+        "where": {
+          "label": "fixtures/synthetic/contribution-drafts-staged.md (synthetic draft 001)",
+          "href": "fixtures/synthetic/contribution-drafts-staged.md#synthetic-draft-001"
+        },
+        "source": "synthetic-DRAFT-REGISTRY.md#synthetic-draft-001",
+        "state": "HELD — synthetic fixture, not a live draft"
+      },
+      {
+        "id": "synthetic-draft-002",
+        "what": "Synthetic Draft 002: example ingest references -> synthetic-org/synthetic-repo PR",
+        "what_if_yes": "Owner approves exact target + text; post via verified account then live read-back.",
+        "what_if_nothing": "Stays in synthetic registry; no external post, no PR, no issue comment.",
+        "where": {
+          "label": "fixtures/synthetic/DRAFT-PR-synthetic-002.md",
+          "href": "fixtures/synthetic/DRAFT-PR-synthetic-002.md#synthetic-draft-002"
+        },
+        "source": "synthetic-DRAFT-REGISTRY.md#synthetic-draft-002",
+        "state": "GATED — synthetic fixture, not a live draft"
+      }
+    ],
+    "mechanics": [
+      {
+        "id": "synthetic-mechanics-001",
+        "what": "synthetic-mechanics-001: synthetic proposal for portfolio navigation corrections",
+        "what_if_yes": "Owner approves/merges or marks done; change lands on staging first per staging-first law.",
+        "what_if_nothing": "Stays awaiting-owner; no merge, no staging deploy.",
+        "where": {
+          "label": "fixtures/synthetic/brief.json#synthetic-mechanics-001",
+          "href": "fixtures/synthetic/brief.json#synthetic-mechanics-001"
+        },
+        "source": "synthetic-brief.json:awaiting-owner:synthetic-mechanics-001",
+        "tag": "",
+        "summary": "Synthetic mechanics fixture: portfolio navigation corrections with synthetic identifiers."
+      },
+      {
+        "id": "synthetic-mechanics-002",
+        "what": "synthetic-mechanics-002: synthetic naming stories proposal",
+        "what_if_yes": "Owner approves/merges or marks done; change lands on staging first per staging-first law.",
+        "what_if_nothing": "Stays awaiting-owner; no merge, no staging deploy.",
+        "where": {
+          "label": "fixtures/synthetic/brief.json#synthetic-mechanics-002",
+          "href": "fixtures/synthetic/brief.json#synthetic-mechanics-002"
+        },
+        "source": "synthetic-brief.json:awaiting-owner:synthetic-mechanics-002",
+        "tag": "",
+        "summary": "Synthetic mechanics fixture: naming-origin stories via progressive disclosure."
+      }
+    ],
+    "staging_promotion": [
+      {
+        "id": "synthetic-staging-promotion",
+        "what": "Synthetic staging alias staging.example.com -> synthetic-deployment-dpl_synthetic001 (base: synthetic frontier fork)",
+        "what_if_yes": "Owner reviews staging at https://staging.example.com/ then promotes verified tree to live (owner-held, never lane-automated).",
+        "what_if_nothing": "Staging stays as-is; no live promotion; nightly handoff holds.",
+        "where": {
+          "label": "https://staging.example.com/ is synthetic-deployment-dpl_synthetic001; ledger at fixtures/synthetic/STAGING-ALIAS-PROTOCOL.md",
+          "href": "https://staging.example.com/"
+        },
+        "source": "synthetic-STAGING-ALIAS-PROTOCOL.md#alias-ledger",
+        "details": {
+          "alias": "staging.example.com",
+          "pinned_deployment": "synthetic-deployment-dpl_synthetic001",
+          "pinned_hash": "synthetic-sha256-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "base": "synthetic frontier fork",
+          "updated": "2026-09-18",
+          "active_lease": "none",
+          "active_holder": "none"
+        }
+      }
+    ],
+    "other_owner_actions": [
+      {
+        "id": "synthetic-owner-action-001",
+        "what": "synthetic-owner-action-001: synthetic preview deployment awaiting owner review",
+        "what_if_yes": "Owner reviews served preview/staging deployment; on approval, staging is promoted to live via owner-held alias move.",
+        "what_if_nothing": "Remains staged or disposable; no production or alias change.",
+        "where": {
+          "label": "fixtures/synthetic/brief.json#synthetic-owner-action-001",
+          "href": "fixtures/synthetic/brief.json#synthetic-owner-action-001"
+        },
+        "source": "synthetic-brief.json:awaiting-owner:synthetic-owner-action-001",
+        "tag": "COMPLETE",
+        "summary": "Synthetic owner action: staging preview ready for owner review."
+      },
+      {
+        "id": "synthetic-owner-action-002",
+        "what": "synthetic-owner-action-002 [BLOCKED]: synthetic blocked lane awaiting triage",
+        "what_if_yes": "Owner triages blocker or authorizes lane re-derive / re-QA; staging repaired and re-verified.",
+        "what_if_nothing": "Stays blocked; no alias write, no deploy, QA incomplete by design.",
+        "where": {
+          "label": "fixtures/synthetic/brief.json#synthetic-owner-action-002 [BLOCKED]",
+          "href": "fixtures/synthetic/brief.json#synthetic-owner-action-002"
+        },
+        "source": "synthetic-brief.json:blocked:synthetic-owner-action-002",
+        "tag": "BLOCKED",
+        "summary": "Synthetic blocked fixture: superseded by later lane, awaiting owner triage."
+      }
+    ]
+  }
+}

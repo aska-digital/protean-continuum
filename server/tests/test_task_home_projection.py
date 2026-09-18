@@ -364,7 +364,8 @@ def test_th_a14_playground_envelope_additions_are_exactly_the_locked_ones(cfg, s
     assert paths == {"/projects", "/projects/{project_id}", "/candidates", "/attention",
                      "/staleness", "/noise", "/scan/status", "/scan",
                      "/projects/{project_id}/review", "/review/undo", "/overview", "/events",
-                     "/action-log/{action_id}/archive", "/action-log/{action_id}/unarchive"}
+                     "/action-log/{action_id}/archive", "/action-log/{action_id}/unarchive",
+                     "/review-queue"}
 
 
 def test_th_a14_never_synced_is_disabled_and_names_the_cli_command(cfg, svc):

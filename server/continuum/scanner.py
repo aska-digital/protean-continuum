@@ -167,7 +167,21 @@ def open_readonly(db_path: str) -> sqlite3.Connection:
     uri = build_ro_uri(db_path)
     if "mode=ro" not in uri:
         raise ValueError("refusing to open a source DB without mode=ro")
-    conn = sqlite3.connect(uri, uri=True, timeout=5.0)
+    try:
+        conn = sqlite3.connect(uri, uri=True, timeout=5.0)
+    except sqlite3.OperationalError as exc:
+        # macOS /var/folders tmpfs + WAL snapshot: mode=ro fails with
+        # "unable to open database file" because the snapshot is still in
+        # WAL mode and the -shm file cannot be created/opened read-only.
+        # Fall back to immutable read-only, which does not require shm.
+        if "unable to open database file" in str(exc) and os.path.exists(db_path):
+            try:
+                alt_uri = uri + "&immutable=1"
+                conn = sqlite3.connect(alt_uri, uri=True, timeout=5.0)
+            except sqlite3.OperationalError:
+                raise exc
+        else:
+            raise
     conn.row_factory = sqlite3.Row
     try:
         # Belt-and-braces: even a bug that tries to write will be refused by the engine.

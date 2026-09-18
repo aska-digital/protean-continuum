@@ -17,3 +17,6 @@ __pycache__/
 
 # os noise
 .DS_Store
+
+# generated runtime content — not committed (build artifact, synthetic fixture is server/fixtures/review-queue.json)
+pages-root/review-queue.json
