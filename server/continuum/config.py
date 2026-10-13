@@ -111,6 +111,20 @@ _DEFAULTS: Dict[str, Any] = {
         "~/.hermes/profiles/*/cache/delegation/**/*-receipt.md",
     ],
     "action_log_stale_after_seconds": 900,
+    # --- Decisions command centre: the org-wide `needs decision` label feed -----------------
+    # GitHub is the source of truth for what waits. A sync projects the open labelled
+    # issues/PRs into a local snapshot; acting posts the ruling (or dispatches an agent
+    # packet) and removes the label. State lives under data/ as JSON + JSONL.
+    "decisions_org": "aska-digital",
+    "decisions_label": "needs decision",
+    "decisions_snapshot_path": "data/decisions.json",
+    "decisions_events_path": "data/decision_events.jsonl",
+    "decisions_dispatch_dir": "data/decision_dispatches",
+    "decisions_ion_tracker_repo": "ion-tracker",
+    "decisions_stale_after_seconds": 900,
+    # Optional argv (never a shell string) that receives a dispatch brief on stdin,
+    # e.g. a Divan Bus post wrapper. Empty means packets queue on disk only.
+    "decisions_dispatch_command": [],
 }
 
 # Alias used by the architecture contract's prose.
@@ -193,6 +207,7 @@ _INT_BOUNDS = {
     "pane_display_cap": (0, 50),
     "task_home_stale_after_seconds": (1, 86400),
     "action_log_stale_after_seconds": (1, 86400),
+    "decisions_stale_after_seconds": (1, 86400),
 }
 _VALID_VIEWS = ("today", "all")
 _TASK_HOME_PATH_KEYS = ("task_home_source_path", "task_home_ledger_path", "task_home_export_dir")

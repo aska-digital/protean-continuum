@@ -357,15 +357,19 @@ def test_th_a14_playground_envelope_additions_are_exactly_the_locked_ones(cfg, s
         assert "home" in card and "state_source" in card or card["task_home"] is None
     # no route was added by task-home: the router surface is unchanged BY TASK-HOME.
     # AL (Orda action log, AL-L5/§4) adds exactly two audited routes —
-    # POST /action-log/{action_id}/archive and POST /action-log/{action_id}/unarchive —
-    # and no other path changed.
+    # POST /action-log/{action_id}/archive and POST /action-log/{action_id}/unarchive.
+    # The decisions command centre adds its own four: GET /decisions,
+    # GET /decisions/session, POST /decisions/sync, POST /decisions/{repo}/{number}/act.
+    # No other path changed.
     from dashboard import plugin_api
     paths = {r.path for r in plugin_api.router.routes}
     assert paths == {"/projects", "/projects/{project_id}", "/candidates", "/attention",
                      "/staleness", "/noise", "/scan/status", "/scan",
                      "/projects/{project_id}/review", "/review/undo", "/overview", "/events",
                      "/action-log/{action_id}/archive", "/action-log/{action_id}/unarchive",
-                     "/review-queue"}
+                     "/review-queue",
+                     "/decisions", "/decisions/session", "/decisions/sync",
+                     "/decisions/{repo}/{number}/act"}
 
 
 def test_th_a14_never_synced_is_disabled_and_names_the_cli_command(cfg, svc):

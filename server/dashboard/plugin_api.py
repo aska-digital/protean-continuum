@@ -12,7 +12,7 @@ import os
 import sys
 from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Header, HTTPException, Query
 from pydantic import BaseModel
 
 # --- make the bundled M1-M7 package importable from either layout -------------
@@ -21,6 +21,7 @@ if _PLUGIN_DIR not in sys.path:
     sys.path.insert(0, _PLUGIN_DIR)
 
 from continuum.config import load_config              # noqa: E402
+from continuum import decisions as _decisions         # noqa: E402
 from continuum.service import Service                 # noqa: E402
 from continuum.service import OverviewConfigError, OverviewModeError  # noqa: E402
 
@@ -232,3 +233,71 @@ def events() -> Dict[str, Any]:
             "committed_at": snapshot["committed_at"], "data_as_of": snapshot["committed_at"],
             "server_time": status.get("server_time"),
             "scan_state": status.get("scan_state")}
+
+
+# --- Decisions command centre -------------------------------------------------
+# The org-wide `needs decision` label, projected locally. Reads serve the local
+# snapshot; sync and act are POSTs behind a per-process token because act writes
+# to GitHub (a comment, a dispatch packet, label changes). The token is handed to
+# same-origin page JS only; a cross-origin page cannot read it without CORS.
+
+import secrets as _secrets  # noqa: E402
+
+_DECISIONS_TOKEN: Optional[str] = None
+
+
+def _decisions_token() -> str:
+    global _DECISIONS_TOKEN
+    if _DECISIONS_TOKEN is None:
+        _DECISIONS_TOKEN = _secrets.token_urlsafe(32)
+    return _DECISIONS_TOKEN
+
+
+def _require_decisions_token(token: Optional[str]) -> None:
+    if not token or not _secrets.compare_digest(token, _decisions_token()):
+        raise HTTPException(status_code=403, detail="decisions action token required")
+
+
+class DecisionActBody(BaseModel):
+    option_id: str
+    mode: str
+    note: Optional[str] = ""
+    expected_fingerprint: str
+    idempotency_key: str
+
+
+@router.get("/decisions")
+def decisions_list() -> Dict[str, Any]:
+    return _decisions.show(get_service().cfg)
+
+
+@router.get("/decisions/session")
+def decisions_session() -> Dict[str, Any]:
+    return {"token": _decisions_token()}
+
+
+@router.post("/decisions/sync")
+def decisions_sync(x_continuum_token: Optional[str] = Header(None)) -> Dict[str, Any]:
+    _require_decisions_token(x_continuum_token)
+    try:
+        return _decisions.sync(get_service().cfg)
+    except _decisions.SyncLocked:
+        raise HTTPException(status_code=409, detail="a decisions sync is already running")
+    except _decisions.DecisionsError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=str(exc))
+
+
+@router.post("/decisions/{repo}/{number}/act")
+def decisions_act(repo: str, number: int, body: DecisionActBody,
+                  x_continuum_token: Optional[str] = Header(None)) -> Dict[str, Any]:
+    _require_decisions_token(x_continuum_token)
+    try:
+        event = _decisions.act(
+            get_service().cfg, "{}#{}".format(repo, number), body.option_id, body.mode,
+            note=body.note or "", expected_fingerprint=body.expected_fingerprint,
+            idempotency_key=body.idempotency_key)
+    except _decisions.SyncLocked:
+        raise HTTPException(status_code=409, detail="a decisions sync is already running")
+    except _decisions.DecisionsError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=str(exc))
+    return {"event": event, "snapshot": _decisions.show(get_service().cfg)}
