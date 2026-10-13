@@ -40,6 +40,12 @@ cd server && python3 -m continuum.cli        # scan surface (see --help for subc
 Both live servers share one `data/registry.db`; single-writer discipline is preserved via
 WAL mode and the lock files in `data/` (generated at runtime, not committed).
 
+The same app also serves the decisions command centre at `/decisions.html`: every open
+issue and PR carrying the org-wide `needs decision` label, as tappable option panels.
+Sync it with `python3 -m continuum.cli decisions sync` (or the page's Sync GitHub button).
+A ruling either posts as a comment for the author or dispatches an agent packet.
+See [docs/decisions-command-centre.md](docs/decisions-command-centre.md).
+
 ### Machine-specific config (re-homing)
 
 Code is byte-faithful to the live tree; deployment knobs live in `server/config.yaml`:

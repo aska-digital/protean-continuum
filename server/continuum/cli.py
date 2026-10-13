@@ -260,10 +260,41 @@ def _print_action_log(report: Dict[str, Any], args, sub: str) -> None:
         print("  target_id={}".format(report.get("target_id")))
 
 
+def _cmd_decisions(args) -> int:
+    """Sync or show the needs-decision queue. Sync reads GitHub; show reads the snapshot."""
+    from . import decisions
+    cfg = load_config(args.hermes_home)
+    sub = args.subcommand or "show"
+    try:
+        report = decisions.sync(cfg) if sub == "sync" else decisions.show(cfg)
+    except decisions.SyncLocked as exc:
+        print("LOCKED: another decisions pass holds {}".format(exc), file=sys.stderr)
+        return decisions.EXIT_LOCKED
+    except decisions.DecisionsError as exc:
+        print("ERROR: {}".format(exc), file=sys.stderr)
+        return 2
+    if args.json:
+        print(json.dumps(report, indent=2, default=str))
+        return 0
+    counts = report.get("counts") or {}
+    print("decisions {}  generated_at={}".format(sub, report.get("generated_at")))
+    print("  total={} waiting={} prs={} issues={} ion={}".format(
+        counts.get("total"), counts.get("waiting"), counts.get("pull_requests"),
+        counts.get("issues"), counts.get("ion")))
+    for item in report.get("items") or []:
+        print("  {} {} ({}d, {})".format(
+            item.get("id"), item.get("title"), item.get("age_days"),
+            item.get("local_status")))
+    for entry in report.get("degraded") or []:
+        print("  degraded: {}".format(entry))
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="continuum")
     p.add_argument("command", choices=["inventory", "board", "inbox", "attention",
-                                       "staleness", "noise", "task-home", "action-log"])
+                                       "staleness", "noise", "task-home", "action-log",
+                                       "decisions"])
     p.add_argument("subcommand", nargs="?", default=None,
                    choices=["sync", "show", "export", "archive", "unarchive", "undo"],
                    help="task-home: sync | show | export; action-log: sync | show | archive | "
@@ -291,6 +322,8 @@ def main(argv=None) -> int:
         return _cmd_task_home(args)
     if args.command == "action-log":
         return _cmd_action_log(args)
+    if args.command == "decisions":
+        return _cmd_decisions(args)
     return _cmd_surface(args)
 
 

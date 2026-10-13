@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Decisions · Continuum</title>
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body class="decisions-body">
+<a class="skip" href="#dec-list">Skip to decisions</a>
+<header class="dec-head">
+  <div>
+    <h1 class="dec-title">Decisions</h1>
+    <p class="dec-sub">Everything carrying <code>needs decision</code> across the org. Pick an option, then either comment the ruling for the author or dispatch an agent to carry it out.</p>
+  </div>
+  <div class="dec-head-actions">
+    <span class="dec-synced" id="dec-synced">not synced yet</span>
+    <button class="dec-btn" id="dec-sync" type="button">Sync GitHub</button>
+    <a class="dec-link" href="/">Board</a>
+    <a class="dec-link" href="/review.html">Review</a>
+  </div>
+</header>
+<div class="dec-metrics" id="dec-metrics" aria-live="polite"></div>
+<div class="dec-filters" role="group" aria-label="Filter decisions">
+  <button type="button" data-filter="all" class="dec-chip on">All</button>
+  <button type="button" data-filter="waiting" class="dec-chip">Waiting</button>
+  <button type="button" data-filter="pull_request" class="dec-chip">Pull requests</button>
+  <button type="button" data-filter="issue" class="dec-chip">Issues</button>
+  <button type="button" data-filter="ion" class="dec-chip">Ion proposals</button>
+  <button type="button" data-filter="done" class="dec-chip">Decided</button>
+</div>
+<p class="dec-banner" id="dec-banner" role="alert" hidden></p>
+<main class="dec-list" id="dec-list" tabindex="-1">
+  <p class="dec-empty" id="dec-loading">Loading the queue…</p>
+</main>
+<script src="/decisions.js" defer></script>
+</body>
+</html>

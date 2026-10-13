@@ -58,6 +58,8 @@ APP_JS = STATIC_DIR / "app.js"
 STYLES_CSS = STATIC_DIR / "styles.css"
 REVIEW_HTML = STATIC_DIR / "review.html"
 REVIEW_JS = STATIC_DIR / "review.js"
+DECISIONS_HTML = STATIC_DIR / "decisions.html"
+DECISIONS_JS = STATIC_DIR / "decisions.js"
 SHARED_INTERACTION_JS = BUILD_ROOT / "desktop" / "kanban-interaction.js"
 
 
@@ -162,6 +164,18 @@ def create_app() -> FastAPI:
     @app.get("/review.js", include_in_schema=False)
     def review_js() -> FileResponse:
         return FileResponse(str(REVIEW_JS), media_type="text/javascript")
+
+    @app.get("/decisions.html", include_in_schema=False)
+    def decisions_html() -> FileResponse:
+        return FileResponse(str(DECISIONS_HTML), media_type="text/html")
+
+    @app.get("/decisions", include_in_schema=False)
+    def decisions_alias() -> FileResponse:
+        return FileResponse(str(DECISIONS_HTML), media_type="text/html")
+
+    @app.get("/decisions.js", include_in_schema=False)
+    def decisions_js() -> FileResponse:
+        return FileResponse(str(DECISIONS_JS), media_type="text/javascript")
 
     # Fixtures-only review queue (generated at build time, no live API at page load for Pages)
     from fastapi.responses import JSONResponse
