@@ -722,12 +722,33 @@ class Registry:
         return snap
 
     def restore(self, snap: Dict[str, Any]) -> None:
-        """Hard-restore a snapshot: links, declared fields, next actions for the snapshotted ids."""
+        """Restore project rows and overlays only for the snapshotted ids.
+
+        A null project image means the row did not exist before the decision.
+        Update existing rows in place so references outside the snapshot are
+        preserved; REPLACE would delete the row and trigger cascades.
+        """
+        project_columns = [row["name"] for row in self.conn.execute("PRAGMA table_info(project)")]
         pids = list((snap.get("projects") or {}).keys())
         for pid in pids:
             self.conn.execute("DELETE FROM project_session WHERE project_id=?", (pid,))
             self.conn.execute("DELETE FROM declared_field WHERE project_id=?", (pid,))
             self.conn.execute("DELETE FROM next_action WHERE project_id=?", (pid,))
+        for pid, image in (snap.get("projects") or {}).items():
+            if image is None:
+                self.conn.execute("DELETE FROM project WHERE project_id=?", (pid,))
+                continue
+            image = dict(image, project_id=pid)
+            # Older audit images can predate additive columns. Leave those
+            # columns intact on existing rows and use schema defaults on insert.
+            columns = [name for name in project_columns if name in image]
+            quoted = ['"' + name.replace('"', '""') + '"' for name in columns]
+            updates = [name + "=excluded." + name for name, column in zip(quoted, columns)
+                       if column != "project_id"]
+            self.conn.execute(
+                "INSERT INTO project ({}) VALUES ({}) ON CONFLICT(project_id) DO UPDATE SET {}".format(
+                    ",".join(quoted), ",".join("?" for _ in columns), ",".join(updates)),
+                [image[name] for name in columns])
         for l in snap.get("links", []):
             self.conn.execute(
                 """INSERT OR REPLACE INTO project_session (link_id, project_id, profile_name,

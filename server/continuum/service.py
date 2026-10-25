@@ -2892,6 +2892,12 @@ class Service:
         involved = [target_id]
         if action == "merge":
             involved = [target_id, payload.get("target_project_id", "")]
+        elif action == "split":
+            # Include the not-yet-created row in the before image, so undo
+            # restores absence and undoing the undo can recreate the split.
+            new_pid = str(uuid.uuid5(uuid.NAMESPACE_URL,
+                                    "continuum:split:{}:{}".format(target_id, time.time())))
+            involved = [target_id, new_pid]
         # snapshot before (outside transaction, read-only)
         before = registry.snapshot([x for x in involved if x])
 
@@ -2960,8 +2966,6 @@ class Service:
                 involved = [src, dst]
             elif action == "split":
                 rows = payload.get("session_refs") or []
-                new_pid = str(uuid.uuid5(uuid.NAMESPACE_URL,
-                                         "continuum:split:{}:{}".format(target_id, time.time())))
                 registry.conn.execute(
                     """INSERT INTO project (project_id, name, kind, phase, lifecycle, confidence,
                            confidence_band, evidence_tier, drive_expected, session_count,
@@ -3048,7 +3052,13 @@ class Service:
         if ev is None:
             raise ValueError("unknown audit_id: {}".format(audit_id))
         before = json.loads(ev["before_json"] or "{}")
-        current = self.registry.snapshot(list((before.get("projects") or {}).keys()))
+        # Older split audit records omitted the newly created id from before.
+        # An id present only in after is an absent row in the inverse image.
+        after = json.loads(ev["after_json"] or "{}")
+        projects = before.setdefault("projects", {})
+        for pid in (after.get("projects") or {}):
+            projects.setdefault(pid, None)
+        current = self.registry.snapshot(list(projects.keys()))
         with self.registry.transaction():
             self.registry.restore(before)
             rev = self._next_rev()
