@@ -47,8 +47,8 @@ function visibleItems() {
   const f = state.filter;
   return items.filter((it) => {
     if (f === 'all') return true;
-    if (f === 'waiting') return it.local_status === 'waiting';
-    if (f === 'done') return it.local_status !== 'waiting';
+    if (f === 'waiting') return ['waiting', 'queued'].includes(it.local_status);
+    if (f === 'done') return ['done', 'dispatched'].includes(it.local_status);
     if (f === 'ion') return it.source === 'ion';
     return it.kind === f;
   });
@@ -118,20 +118,21 @@ function actionBar(it) {
     '<p class="dec-apply-hint">' +
     (it.source === 'ion'
       ? 'Records the matching ion label for the plan on display and clears needs decision.'
-      : 'Comment posts the ruling on the item for its author. Dispatch writes an agent packet, announces it on the item, and clears needs decision.') +
+      : 'Comment posts the ruling on the item for its author. Dispatch writes an agent packet, announces its status on the item, and retains needs decision until a handoff is confirmed.') +
     '</p></div>';
 }
 
 function itemCard(it) {
-  const done = it.local_status !== 'waiting';
+  const done = ['done', 'dispatched'].includes(it.local_status);
+  const queued = it.local_status === 'queued';
   const age = it.age_days >= 1 ? Math.round(it.age_days) + 'd waiting' : 'waiting today';
   const meta = [it.repo + '#' + it.number, kindLabel(it), age,
     it.author ? 'by ' + it.author : '',
     it.kind === 'pull_request' && it.changed_files
       ? it.changed_files + ' files, +' + it.additions + '/-' + it.deletions : '',
     it.draft ? 'draft' : ''].filter(Boolean).join(' · ');
-  const decided = done && it.last_action
-    ? '<p class="dec-decided">Decided: ' + esc(it.last_action.option_label || '') +
+  const decided = (done || queued) && it.last_action
+    ? '<p class="dec-decided">' + (queued ? 'Queued, execution unconfirmed: ' : 'Decided: ') + esc(it.last_action.option_label || '') +
       ' (' + esc(it.last_action.mode || '') + ', ' + esc(it.local_status) + ')</p>' : '';
   return '<article class="dec-card' + (done ? ' done' : '') + '" data-item="' + esc(it.id) + '">' +
     '<header class="dec-card-head"><span class="dec-meta">' + esc(meta) + '</span>' +
@@ -140,7 +141,10 @@ function itemCard(it) {
     '<p class="dec-question">' + esc(it.question) + '</p>' +
     (it.context ? '<p class="dec-context">' + esc(it.context) + '</p>' : '') +
     decided +
-    (done ? '' : '<div class="dec-options">' + it.options.map((o) => optionPanel(it, o)).join('') + '</div>' + actionBar(it)) +
+    (queued && it.last_action && it.last_action.dispatch_error
+      ? '<p class="dec-context">Dispatch failed: ' + esc(it.last_action.dispatch_error) + '</p>' : '') +
+    (queued ? '<p class="dec-context">Resolve the queued handoff before dispatching again. Open on GitHub to review the recorded decision.</p>' : '') +
+    ((done || queued) ? '' : '<div class="dec-options">' + it.options.map((o) => optionPanel(it, o)).join('') + '</div>' + actionBar(it)) +
     '</article>';
 }
 
