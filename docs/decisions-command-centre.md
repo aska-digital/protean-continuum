@@ -49,10 +49,16 @@ Pick a panel, optionally add a note, then choose how the ruling travels:
   author proceeds from the comment. A hold keeps the label on.
 - **Dispatch an agent.** A dispatch packet (JSON plus a markdown brief) is
   written under `data/decision_dispatches/`, the ruling is announced on the
-  item, and the label comes off. If `decisions_dispatch_command` is configured
+  item. The label comes off only when the dispatch command returns an acceptance
+  receipt. If `decisions_dispatch_command` is configured
   (an argv list, never a shell string), the brief is fed to it on stdin, for
   example a Divan Bus post wrapper that hands the work to a seat. With no
-  command configured the packet queues on disk and the card shows `queued`.
+  command configured, or if the command fails, the packet queues on disk and the
+  card shows `queued` in the Waiting view. The label stays on, so sync/restart
+  cannot silently remove the outstanding handoff. Failures are shown on the card.
+  A queued card links to the GitHub decision and disables repeat dispatch controls;
+  an operator must resolve the existing packet before making another handoff.
+  A recorded acceptance is not proof of implementation or completion.
   The packet instructs the agent to re-verify the item, keep the original
   author's commits and attribution on a salvage, never force-push, and report
   back on the item.

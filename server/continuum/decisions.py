@@ -493,12 +493,17 @@ def _overlay(cfg: Any, items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
             last[ev["item_id"]] = ev
     for item in items:
         ev = last.get(item["id"])
-        if ev and ev.get("fingerprint") == item["fingerprint"] and ev.get("status") in (
-                "done", "dispatched", "queued"):
+        # Our own decision comment changes the remote fingerprint. A pending
+        # packet must remain visible across that change; this overlay never
+        # authorizes execution of the old packet against changed source content.
+        if ev and (ev.get("status") == "queued" or
+                   (ev.get("fingerprint") == item["fingerprint"] and
+                    ev.get("status") in ("done", "dispatched"))):
             item["local_status"] = ev["status"]
             item["last_action"] = {
                 "action_id": ev.get("action_id"), "option_label": ev.get("option_label"),
-                "mode": ev.get("mode"), "at": ev.get("at"), "status": ev.get("status")}
+                "mode": ev.get("mode"), "at": ev.get("at"), "status": ev.get("status"),
+                "receipt": ev.get("receipt", ""), "dispatch_error": ev.get("dispatch_error", "")}
     return items
 
 
@@ -541,7 +546,7 @@ def sync(cfg: Any, runner: Optional[Runner] = None, now: Optional[float] = None)
             "items": _overlay(cfg, items), "degraded": degraded,
             "counts": {
                 "total": len(items),
-                "waiting": sum(1 for i in items if i["local_status"] == "waiting"),
+                "waiting": sum(1 for i in items if i["local_status"] in ("waiting", "queued")),
                 "pull_requests": sum(1 for i in items if i["kind"] == "pull_request"),
                 "issues": sum(1 for i in items if i["kind"] == "issue"),
                 "ion": sum(1 for i in items if i["source"] == "ion"),
@@ -568,13 +573,16 @@ def show(cfg: Any) -> Dict[str, Any]:
 # --------------------------------------------------------------- acting
 
 def _comment_body(item: Dict[str, Any], option: Dict[str, Any], mode: str,
-                  note: str, action_id: str) -> str:
+                  note: str, action_id: str, dispatch_status: str = "queued") -> str:
     lines = ["## Decision", "", "**Chosen: {}**".format(option["label"])]
     if option.get("detail"):
         lines += ["", option["detail"]]
     if note.strip():
         lines += ["", note.strip()]
-    if mode == "dispatch":
+    if mode == "dispatch" and dispatch_status == "queued":
+        lines += ["", "The dispatch packet is queued; agent execution has not been confirmed. "
+                      "The `needs decision` label stays on until the handoff is resolved."]
+    elif mode == "dispatch":
         lines += ["", "An agent has been dispatched to carry this out and will report back here. "
                       "No action is needed from the author unless the agent asks."]
     elif option["intent"] == "hold":
@@ -683,16 +691,19 @@ def act(cfg: Any, item_id: str, option_id: str, mode: str, note: str = "",
                 md_path = os.path.join(dispatch_dir(cfg), action_id + ".md")
                 try:
                     receipt = _run_dispatch_command(cfg, md_path)
-                except Exception:
+                except Exception as exc:
                     receipt = None
+                    event["dispatch_error"] = str(exc)[:240]
                 event["status"] = "dispatched" if receipt else "queued"
                 event["receipt"] = receipt or "packet queued at {}".format(md_path)
                 event["packet"] = packet["action_id"]
+                if not receipt:
+                    keep_label = True
             marker = "<!-- continuum-decision:{} -->".format(action_id)
             comments = gh.get("repos/{}/{}/issues/{}/comments?per_page=50".format(org, repo, number)) or []
             if not any(marker in str(c.get("body") or "") for c in comments):
                 gh.post(base + "/comments",
-                        {"body": _comment_body(fresh, option, mode, note or "", action_id)})
+                        {"body": _comment_body(fresh, option, mode, note or "", action_id, event["status"])})
         if not keep_label:
             gh.delete(base + "/labels/" + urllib.parse.quote(label, safe=""))
         _append_event(cfg, event)

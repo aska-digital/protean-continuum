@@ -202,3 +202,70 @@ def test_decisions_routes_serve_page_and_guard_actions():
     assert listing.status_code == 200 and "counts" in listing.json()
     guarded = client.post("/api/plugins/continuum/decisions/sync", json={})
     assert guarded.status_code == 403, "sync writes a snapshot and must carry the session token"
+
+class StatefulGH(FakeGH):
+    """Apply comment/label effects so the next sync matches GitHub semantics."""
+    def __call__(self, argv, stdin=None):
+        if "search/issues" in " ".join(argv):
+            self.calls.append((argv, stdin))
+            items = [i for i in self.items if any(l['name'] == 'needs decision' for l in i['labels'])]
+            return json.dumps({'total_count': len(items), 'items': items})
+        if '--method' in argv:
+            path = next(a for a in argv if a.startswith('repos/'))
+            parts = path.split('/')
+            repo, number = parts[2], int(parts[4])
+            item = next(i for i in self.items if i['number'] == number)
+            if 'DELETE' in argv:
+                item['labels'] = []
+            elif '/comments' in path and 'POST' in argv:
+                self.comments.setdefault((repo, number), []).append({'id': 999, **json.loads(stdin)})
+                item['comments'] += 1
+                item['updated_at'] = '2026-10-14T10:00:00Z'
+        return super().__call__(argv, stdin)
+
+
+@pytest.mark.parametrize('dispatch_result', ['absent', 'failed', 'accepted'])
+def test_dispatch_retention_across_sync_and_restart(tmp_path, monkeypatch, dispatch_result):
+    gh = StatefulGH([_item('exo', 7, 'Synthetic work', PR_BODY, pr=True)])
+    config = cfg(tmp_path)
+    attempts = []
+    def dispatch(*args):
+        attempts.append(True)
+        if dispatch_result == 'failed':
+            raise dec.DecisionsError('synthetic runner unavailable', status_code=502)
+        return 'synthetic acceptance' if dispatch_result == 'accepted' else None
+    monkeypatch.setattr(dec, '_run_dispatch_command', dispatch)
+    item = dec.sync(config, runner=gh)['items'][0]
+    option = next(o for o in item['options'] if o['intent'] == 'salvage')
+    kwargs = dict(expected_fingerprint=item['fingerprint'], idempotency_key='retention-case', runner=gh)
+    event = dec.act(config, item['id'], option['id'], 'dispatch', **kwargs)
+    queued = dispatch_result != 'accepted'
+    assert event['status'] == ('queued' if queued else 'dispatched')
+    comments = gh.posts('/comments')
+    body = json.loads(comments[0][1])['body']
+    assert ('has been dispatched' in body) is not queued
+    assert ('execution has not been confirmed' in body) is queued
+    # Replay before and after sync is not another command invocation or comment.
+    assert dec.act(config, item['id'], option['id'], 'dispatch', **kwargs) == event
+    refreshed = dec.sync(config, runner=gh)
+    assert len(refreshed['items']) == (1 if queued else 0)
+    if queued:
+        assert refreshed['counts']['waiting'] == 1
+        assert refreshed['items'][0]['fingerprint'] != item['fingerprint']
+        assert refreshed['items'][0]['local_status'] == 'queued'
+        assert dec.show(dict(config))['items'][0]['local_status'] == 'queued'
+        assert bool(refreshed['items'][0]['last_action']['dispatch_error']) == (dispatch_result == 'failed')
+    assert dec.act(config, item['id'], option['id'], 'dispatch', **kwargs) == event
+    assert len(attempts) == 1
+    assert len(gh.posts('/comments')) == 1
+
+
+def test_queued_card_remains_waiting_and_cannot_redispatch():
+    import pathlib
+    import shutil
+    import subprocess
+    node = shutil.which('node')
+    if not node:
+        pytest.skip('node is required for the dashboard logic regression')
+    script = pathlib.Path(__file__).parent / 'js' / 'test_decisions_queue.cjs'
+    subprocess.run([node, str(script)], check=True, capture_output=True, text=True)
