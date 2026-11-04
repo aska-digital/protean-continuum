@@ -110,3 +110,26 @@ capacity and privacy-minimizing recovery previews. Run:
 ```sh
 python -m pytest server/tests/test_commitments.py -q
 ```
+
+## Explicit operator commands
+
+A local CLI makes intake and reconciliation usable without starting a service:
+
+```sh
+cd server
+python -m continuum.commitments_cli outstanding --path /private/local/path/commitments.json
+python -m continuum.commitments_cli attention --path /private/local/path/commitments.json --stale-after 86400
+python -m continuum.commitments_cli create --path /private/local/path/commitments.json < intake.json
+python -m continuum.commitments_cli update --path /private/local/path/commitments.json < transition.json
+python -m continuum.commitments_cli recovery-preview < explicitly-selected-packets.json
+```
+
+Mutation JSON fields match the `Ledger.create`/`Ledger.update` keyword arguments.
+The path must be explicit: the command never guesses a runtime, scans a home, or
+starts a dispatcher. `attention` flags unresolved ownership, blocked work,
+unconfirmed handoffs, incomplete dependencies and stale evidence without changing
+anything. Source closure or a missing label never implicitly closes a commitment.
+Output may contain private information: keep stdout in the same private context.
+A rejected command exits 2 without echoing the request or private path. If a write
+outcome is uncertain, replay the same request and idempotency key before retrying
+with new authority or a different revision. This CLI is not a scheduler.
